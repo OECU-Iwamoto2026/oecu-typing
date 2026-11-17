@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090b14">
+  <title>OECU TYPE//ARENA</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #090b14;
+      --panel: rgba(17, 22, 38, .88);
+      --line: rgba(155, 176, 255, .16);
+      --text: #f0f3ff;
+      --muted: #858da9;
+      --cyan: #45f3ff;
+      --pink: #ff4fd8;
+      --lime: #c4ff55;
+      --danger: #ff5577;
+      font-family: Inter, "Segoe UI", "Noto Sans JP", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at 50% 42%, rgba(35, 44, 91, .36), transparent 58%),
+        linear-gradient(rgba(69, 243, 255, .035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(69, 243, 255, .035) 1px, transparent 1px),
+        var(--bg);
+      background-size: auto, 42px 42px, 42px 42px, auto;
+    }
+
+    body::before {
+      position: fixed;
+      z-index: -1;
+      inset: 0;
+      pointer-events: none;
+      content: "";
+      background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, .12) 4px);
+    }
+
+    button { font: inherit; }
+    .shell { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+
+    .topbar {
+      display: flex;
+      min-height: 82px;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      font-size: 15px;
+      font-weight: 900;
+      box-shadow: 0 0 18px rgba(69, 243, 255, .18), inset 0 0 12px rgba(69, 243, 255, .1);
+      transform: rotate(45deg);
+    }
+    .brand-mark span { transform: rotate(-45deg); }
+    .brand-name { font-size: 13px; font-weight: 800; letter-spacing: .16em; }
+    .brand-sub { margin-top: 4px; color: var(--muted); font-size: 9px; letter-spacing: .2em; }
+    .top-right { display: flex; align-items: center; gap: 20px; }
+    .live-label { color: var(--lime); font: 700 10px/1 monospace; letter-spacing: .14em; }
+    .live-label::before {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      margin-right: 8px;
+      border-radius: 50%;
+      background: var(--lime);
+      box-shadow: 0 0 10px var(--lime);
+      content: "";
+      animation: blink 1.4s infinite;
+    }
+    .sound-button {
+      padding: 8px 11px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--muted);
+      background: rgba(255,255,255,.025);
+      cursor: pointer;
+      font-size: 11px;
+    }
+    .sound-button:hover, .sound-button[aria-pressed="true"] { border-color: var(--cyan); color: var(--cyan); }
+
+    main { padding: 38px 0 28px; }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--cyan);
+      font: 700 10px/1.5 monospace;
+      letter-spacing: .24em;
+      text-align: center;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(24px, 4vw, 39px);
+      font-weight: 900;
+      letter-spacing: .055em;
+      text-align: center;
+      text-shadow: 0 0 24px rgba(69, 243, 255, .25);
+    }
+    h1 span { color: var(--cyan); }
+    .intro { margin: 10px 0 28px; color: var(--muted); font-size: 12px; text-align: center; }
+
+    .hud {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .stat {
+      position: relative;
+      min-height: 74px;
+      padding: 13px 16px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: var(--panel);
+    }
+    .stat::after {
+      position: absolute;
+      right: -15px;
+      bottom: -34px;
+      width: 70px;
+      height: 70px;
+      border: 1px solid rgba(69, 243, 255, .1);
+      border-radius: 50%;
+      content: "";
+    }
+    .stat-label { color: var(--muted); font: 700 9px/1 monospace; letter-spacing: .16em; }
+    .stat-value { margin-top: 8px; font: 800 24px/1 monospace; }
+    .stat-value small { color: var(--muted); font-size: 11px; }
+    #timerValue { color: var(--lime); }
+    #scoreValue { color: var(--cyan); }
+    #comboValue { color: var(--pink); }
+
+    .arena {
+      position: relative;
+      min-height: 330px;
+      padding: 25px clamp(18px, 5vw, 52px) 29px;
+      overflow: hidden;
+      border: 1px solid rgba(69, 243, 255, .31);
+      border-radius: 7px;
+      background:
+        radial-gradient(ellipse at 50% 0, rgba(69, 243, 255, .09), transparent 65%),
+        linear-gradient(135deg, rgba(255,255,255,.025), transparent 45%),
+        rgba(13, 17, 30, .92);
+      box-shadow: 0 0 40px rgba(25, 117, 153, .08), inset 0 0 40px rgba(69, 243, 255, .025);
+    }
+    .arena::before, .arena::after {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-color: var(--cyan);
+      border-style: solid;
+      content: "";
+      opacity: .8;
+    }
+    .arena::before { top: 0; left: 0; border-width: 2px 0 0 2px; }
+    .arena::after { right: 0; bottom: 0; border-width: 0 2px 2px 0; }
+    .arena-top { display: flex; align-items: center; justify-content: space-between; }
+    .round-label, .level-label { color: var(--muted); font: 700 10px/1 monospace; letter-spacing: .14em; }
+    .level-label strong { color: var(--pink); }
+    .progress-track { height: 3px; margin: 14px 0 26px; background: rgba(255,255,255,.08); }
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--cyan), var(--pink));
+      box-shadow: 0 0 12px var(--cyan);
+      transition: width .16s ease;
+    }
+    .word-label { margin: 0 0 11px; color: var(--muted); font-size: 12px; text-align: center; }
+    .word {
+      min-height: 57px;
+      margin: 0;
+      font-size: clamp(31px, 6vw, 52px);
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-align: center;
+      text-shadow: 0 0 25px rgba(255,255,255,.13);
+    }
+    .word .done { color: var(--cyan); text-shadow: 0 0 12px rgba(69,243,255,.7); }
+    .word .pending { color: #707891; }
+    .romaji {
+      min-height: 20px;
+      margin: 8px 0 25px;
+      color: var(--lime);
+      font: 800 17px/1.3 monospace;
+      letter-spacing: .22em;
+      text-align: center;
+      text-shadow: 0 0 12px rgba(196,255,85,.35);
+    }
+    .romaji.empty { color: #65708b; text-shadow: none; }
+    .input-wrap { position: relative; width: min(460px, 100%); margin: 0 auto; }
+    .input-wrap::before {
+      position: absolute;
+      top: 50%;
+      left: 17px;
+      color: var(--cyan);
+      content: ">";
+      font: 800 17px/1 monospace;
+      transform: translateY(-50%);
+    }
+    #typeInput {
+      width: 100%;
+      height: 48px;
+      padding: 0 18px 0 40px;
+      outline: none;
+      border: 1px solid rgba(69, 243, 255, .3);
+      border-radius: 4px;
+      color: var(--lime);
+      background: rgba(4, 8, 16, .8);
+      font: 700 15px monospace;
+      letter-spacing: .12em;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    #typeInput:focus { border-color: var(--cyan); box-shadow: 0 0 18px rgba(69,243,255,.14); }
+    #typeInput::placeholder { color: #5e6680; font-size: 12px; letter-spacing: .03em; }
+    #typeInput:disabled { opacity: .55; }
+    .arena.shake { animation: shake .22s linear; }
+    .hint { margin: 12px 0 0; color: #727b96; font-size: 10px; text-align: center; }
+
+    .controls { display: flex; justify-content: center; margin: 18px 0 0; }
+    .primary-button {
+      min-width: 220px;
+      padding: 14px 25px;
+      border: 1px solid var(--cyan);
+      border-radius: 4px;
+      color: #071118;
+      background: var(--cyan);
+      box-shadow: 0 0 24px rgba(69,243,255,.2);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .14em;
+      transition: transform .18s, box-shadow .18s;
+    }
+    .primary-button:hover { transform: translateY(-2px); box-shadow: 0 0 32px rgba(69,243,255,.42); }
+    .primary-button:focus-visible, .sound-button:focus-visible { outline: 2px solid white; outline-offset: 3px; }
+    .instructions { margin: 17px 0 0; color: var(--muted); font-size: 11px; text-align: center; }
+    .instructions kbd { padding: 2px 5px; border: 1px solid var(--line); border-radius: 3px; color: #dce4ff; background: rgba(255,255,255,.04); font: 10px monospace; }
+    footer { padding: 14px 0 26px; color: #656d85; font: 9px/1.6 monospace; letter-spacing: .08em; text-align: center; }
+
+    .overlay {
+      position: absolute;
+      z-index: 2;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: rgba(6, 9, 17, .78);
+      backdrop-filter: blur(4px);
+    }
+    .overlay[hidden] { display: none; }
+    .count-number { color: var(--cyan); font: 900 clamp(70px, 16vw, 120px)/1 monospace; text-shadow: 0 0 35px rgba(69,243,255,.7); animation: pop .75s ease both; }
+    .result-card { width: min(360px, calc(100% - 32px)); padding: 28px; border: 1px solid var(--cyan); border-radius: 6px; background: rgba(13, 19, 34, .97); text-align: center; box-shadow: 0 0 40px rgba(69,243,255,.12); }
+    .result-card h2 { margin: 0 0 6px; color: var(--cyan); font: 900 20px monospace; letter-spacing: .12em; }
+    .result-card p { margin: 0 0 18px; color: var(--muted); font-size: 11px; }
+    .result-score { margin: 13px 0; font: 900 42px monospace; }
+    .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 18px 0 22px; }
+    .result-stat { padding: 10px; border: 1px solid var(--line); color: var(--muted); font-size: 10px; }
+    .result-stat strong { display: block; margin-top: 5px; color: var(--text); font: 700 17px monospace; }
+
+    @keyframes blink { 50% { opacity: .35; } }
+    @keyframes shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+    @keyframes pop { 0% { opacity: 0; transform: scale(.65); } 40% { opacity: 1; transform: scale(1.12); } 100% { transform: scale(1); } }
+    @media (max-width: 600px) {
+      .shell { width: min(100% - 24px, 520px); }
+      .topbar { min-height: 68px; }
+      .top-right { gap: 10px; }
+      .live-label { font-size: 8px; }
+      main { padding-top: 28px; }
+      .hud { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .stat { min-height: 66px; padding: 10px 12px; }
+      .arena { min-height: 318px; padding: 20px 14px 23px; }
+      .word { min-height: 46px; }
+      .romaji { margin-bottom: 21px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand" aria-label="OECU Type Arena">
+        <div class="brand-mark"><span>O</span></div>
+        <div>
+          <div class="brand-name">OECU TYPE<span style="color:var(--cyan)">//</span>ARENA</div>
+          <div class="brand-sub">TECH KEYWORD BATTLE</div>
+        </div>
+      </div>
+      <div class="top-right">
+        <span class="live-label">SYSTEM ONLINE</span>
+        <button class="sound-button" id="soundButton" type="button" aria-pressed="false">♪ SOUND OFF</button>
+      </div>
+    </header>
+
+    <main>
+      <p class="eyebrow">OSAKA ELECTRO-COMMUNICATION UNIVERSITY / IT EDITION</p>
+      <h1>TYPE <span>FASTER.</span> THINK SMARTER.</h1>
+      <p class="intro">大阪電気通信大学の学びにつながるITキーワードを打ち込め！</p>
+
+      <section class="hud" aria-label="ゲームステータス">
+        <div class="stat"><div class="stat-label">TIME LEFT</div><div class="stat-value" id="timerValue">60<small> sec</small></div></div>
+        <div class="stat"><div class="stat-label">SCORE</div><div class="stat-value" id="scoreValue">00000</div></div>
+        <div class="stat"><div class="stat-label">COMBO</div><div class="stat-value" id="comboValue">0<small> hit</small></div></div>
+        <div class="stat"><div class="stat-label">ACCURACY</div><div class="stat-value" id="accuracyValue">100<small>%</small></div></div>
+        <div class="stat"><div class="stat-label">KEYS / SEC</div><div class="stat-value" id="speedValue">0.0<small> KPS</small></div></div>
+      </section>
+
+      <section class="arena" id="arena" aria-label="タイピングエリア">
+        <div class="arena-top">
+          <span class="round-label">TARGET // <span id="targetNumber">--</span></span>
+          <span class="level-label">LEVEL <strong id="levelValue">01</strong></span>
+        </div>
+        <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+        <p class="word-label" id="wordLabel">READY WHEN YOU ARE</p>
+        <p class="word" id="wordDisplay" aria-live="polite">準備完了</p>
+        <p class="romaji" id="romajiDisplay" aria-live="polite">STARTを押してチャレンジ開始</p>
+        <div class="input-wrap">
+          <input id="typeInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="キーワードをローマ字で入力" placeholder="入力内容はワードの下に表示されます" readonly disabled>
+        </div>
+        <p class="hint">表記ゆれ対応：shu / syu・shi / si・chi / ti・小さい「っ」「ゃゅょ」・n / nn / n' など</p>
+        <div class="overlay" id="countdownOverlay" hidden aria-live="assertive"><span class="count-number" id="countdownNumber">3</span></div>
+        <div class="overlay" id="resultOverlay" hidden aria-live="polite">
+          <div class="result-card">
+            <h2 id="resultTitle">TIME UP!</h2>
+            <p>おつかれさま！今回の戦績はこちら</p>
+            <div class="result-score" id="resultScore">0</div>
+            <div class="result-grid">
+              <div class="result-stat">正解ワード<strong id="resultWords">0</strong></div>
+              <div class="result-stat">正確率<strong id="resultAccuracy">100%</strong></div>
+              <div class="result-stat">最高コンボ<strong id="resultCombo">0</strong></div>
+              <div class="result-stat">入力速度<strong id="resultWpm">0 WPM</strong></div>
+            </div>
+            <button class="primary-button" id="retryButton" type="button">もう一度プレイ</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="controls"><button class="primary-button" id="startButton" type="button">▶　START GAME</button></div>
+      <p class="instructions">開始: <kbd>SPACE</kbd>　|　入力: <kbd>A–Z</kbd>　|　戻る: <kbd>BACKSPACE</kbd>　|　制限時間 60秒</p>
+    </main>
+    <footer>OECU TYPE//ARENA <span>—</span> BUILT FOR THE NEXT GENERATION OF TECH CREATORS</footer>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const WORDS = [
+        { ja: "プログラミング", roma: "puroguramingu" },
+        { ja: "人工知能", roma: "jinkouchinou" },
+        { ja: "データサイエンス", roma: "de-tasaiensu" },
+        { ja: "ネットワーク", roma: "nettowa-ku" },
+        { ja: "サイバーセキュリティ", roma: "saiba-sekyurithi" },
+        { ja: "アルゴリズム", roma: "arugorizumu" },
+        { ja: "情報通信", roma: "jouhoutsuushin" },
+        { ja: "クラウド", roma: "kuraudo" },
+        { ja: "ロボティクス", roma: "robotikusu" },
+        { ja: "機械学習", roma: "kikaigakushuu" },
+        { ja: "データベース", roma: "de-tabe-su" },
+        { ja: "シミュレーション", roma: "shimyure-shon" },
+        { ja: "画像処理", roma: "gazoushori" },
+        { ja: "ゲーム開発", roma: "ge-mukaihatsu" },
+        { ja: "ソフトウェア", roma: "sofutowea" },
+        { ja: "電子工学", roma: "denshikougaku" },
+        { ja: "メタバース", roma: "metaba-su" },
+        { ja: "プログラミング言語", roma: "puroguramingugengo" },
+        { ja: "量子コンピュータ", roma: "ryoushikonpyu-ta" },
+        { ja: "ユーザーインターフェース", roma: "yu-za-inta-fe-su" },
+        { ja: "情報セキュリティ", roma: "jouhousekyurithi" },
+        { ja: "センサーネットワーク", roma: "sensa-nettowa-ku" },
+        { ja: "ビッグデータ", roma: "biggude-ta" },
+        { ja: "オペレーティングシステム", roma: "opere-thingushisutemu" },
+        { ja: "モデリング", roma: "moderingu" },
+        { ja: "ヒューマンインターフェース", roma: "hyu-maninta-fe-su" },
+        { ja: "無線通信", roma: "musentsuushin" },
+        { ja: "ものづくり", roma: "monozukuri", aliases: ["monodukuri", "monodzukuri"] }
+      ];
+      const ROMAJI_ALIASES = new Map([
+        ["sha", ["sha", "sya", "shixya", "shilya", "sixya", "silya"]],
+        ["shu", ["shu", "syu", "shixyu", "shilyu", "sixyu", "silyu"]],
+        ["sho", ["sho", "syo", "shixyo", "shilyo", "sixyo", "silyo"]],
+        ["cha", ["cha", "tya", "cya", "chixya", "chilya", "tixya", "tilya", "cixya", "cilya"]],
+        ["chu", ["chu", "tyu", "cyu", "chixyu", "chilyu", "tixyu", "tilyu", "cixyu", "cilyu"]],
+        ["cho", ["cho", "tyo", "cyo", "chixyo", "chilyo", "tixyo", "tilyo", "cixyo", "cilyo"]],
+        ["ja", ["ja", "jya", "zya", "jixya", "jilya", "zixya", "zilya"]],
+        ["ju", ["ju", "jyu", "zyu", "jixyu", "jilyu", "zixyu", "zilyu"]],
+        ["jo", ["jo", "jyo", "zyo", "jixyo", "jilyo", "zixyo", "zilyo"]],
+        ["shi", ["shi", "si"]], ["chi", ["chi", "ti"]], ["tsu", ["tsu", "tu"]],
+        ["fu", ["fu", "hu"]], ["fe", ["fe", "fye", "fwe", "hwe", "fule", "fuxe", "hule", "huxe"]],
+        ["ji", ["ji", "zi"]], ["thi", ["thi", "ti", "texi", "teli", "tili", "tei"]]
+      ]);
+      const ROMAJI_ALIAS_KEYS = [...ROMAJI_ALIASES.keys()].sort((a, b) => b.length - a.length);
+
+      function buildRomajiVariants(roma) {
+        const parts = [];
+        for (let index = 0; index < roma.length;) {
+          const alias = ROMAJI_ALIAS_KEYS.find((key) => roma.startsWith(key, index));
+          if (alias) {
+            parts.push(ROMAJI_ALIASES.get(alias));
+            index += alias.length;
+            continue;
+          }
+          const smallYKana = roma.slice(index, index + 3);
+          if (/^[bcdfghjklmnpqrstvwxyz]y[auo]$/.test(smallYKana)) {
+            const consonant = smallYKana[0];
+            const vowel = smallYKana[2];
+            parts.push([smallYKana, `${consonant}ixy${vowel}`, `${consonant}ily${vowel}`]);
+            index += 3;
+            continue;
+          }
+          const first = roma[index];
+          if (first === roma[index + 1] && /[bcdfghjklmpqrstvwxyz]/.test(first)) {
+            parts.push([first + first, `xtsu${first}`, `ltsu${first}`]);
+            index += 2;
+            continue;
+          }
+          const pair = roma.slice(index, index + 2);
+          if (["ou", "oo"].includes(pair)) {
+            parts.push(["ou", "oo"]);
+            index += 2;
+            continue;
+          }
+          if (["ei", "ee"].includes(pair)) {
+            parts.push(["ei", "ee"]);
+            index += 2;
+            continue;
+          }
+          const character = roma[index];
+          if (character === "-") {
+            const previousVowel = roma[index - 1];
+            parts.push(previousVowel && /[aiueo]/.test(previousVowel) ? ["-", previousVowel] : ["-"]);
+          } else if (character === "n") {
+            const previous = roma[index - 1];
+            const next = roma[index + 1];
+            const previousIsVowel = previous && /[aiueo]/.test(previous);
+            if (index === roma.length - 1) {
+              parts.push(["n", "nn", "n'"]);
+            } else if (previousIsVowel && (/[aiueo]/.test(next) || next === "y")) {
+              parts.push(["n", "nn", "n'"]);
+            } else if (previousIsVowel && next !== "n") {
+              parts.push(["n", "nn"]);
+            } else {
+              parts.push(["n"]);
+            }
+          } else {
+            parts.push([character]);
+          }
+          index += 1;
+        }
+
+        return parts.reduce(
+          (variants, options) => variants.flatMap((prefix) => options.map((option) => prefix + option)),
+          [""]
+        );
+      }
+
+      const GAME_SECONDS = 60;
+      const $ = (id) => document.getElementById(id);
+      const elements = {
+        arena: $("arena"), timer: $("timerValue"), score: $("scoreValue"),
+        combo: $("comboValue"), accuracy: $("accuracyValue"), target: $("targetNumber"),
+        speed: $("speedValue"),
+        level: $("levelValue"), wordLabel: $("wordLabel"), word: $("wordDisplay"),
+        romaji: $("romajiDisplay"), input: $("typeInput"), progress: $("progressBar"),
+        start: $("startButton"), retry: $("retryButton"), countdown: $("countdownOverlay"),
+        countdownNumber: $("countdownNumber"), result: $("resultOverlay"),
+        sound: $("soundButton")
+      };
+
+      let state = "ready";
+      let currentWord = null;
+      let currentVariants = [];
+      let typed = "";
+      let score = 0;
+      let combo = 0;
+      let maxCombo = 0;
+      let solved = 0;
+      let correctKeys = 0;
+      let wrongKeys = 0;
+      let remaining = GAME_SECONDS;
+      let elapsed = 0;
+      let wordNumber = 0;
+      let bag = [];
+      let lastWord = "";
+      let timerId = null;
+      let speedTimerId = null;
+      let completionTimeout = null;
+      const keyTimestamps = [];
+      let soundEnabled = false;
+      let audioContext = null;
+
+      function accuracy() {
+        const total = correctKeys + wrongKeys;
+        return total === 0 ? 100 : Math.round((correctKeys / total) * 100);
+      }
+
+      function updateHud() {
+        elements.timer.innerHTML = `${remaining}<small> sec</small>`;
+        elements.timer.style.color = remaining <= 10 ? "var(--danger)" : "";
+        elements.score.textContent = String(score).padStart(5, "0");
+        elements.combo.innerHTML = `${combo}<small> hit</small>`;
+        elements.accuracy.innerHTML = `${accuracy()}<small>%</small>`;
+        elements.level.textContent = String(Math.floor(solved / 5) + 1).padStart(2, "0");
+      }
+
+      function updateKeySpeed(now = performance.now()) {
+        while (keyTimestamps.length > 0 && keyTimestamps[0] <= now - 1000) keyTimestamps.shift();
+        elements.speed.innerHTML = `${keyTimestamps.length.toFixed(1)}<small> KPS</small>`;
+      }
+
+      function recordKeystroke() {
+        keyTimestamps.push(performance.now());
+        updateKeySpeed();
+      }
+
+      function nextWord() {
+        if (bag.length === 0) {
+          bag = [...WORDS].sort(() => Math.random() - 0.5);
+          if (bag.length > 1 && bag[bag.length - 1].roma === lastWord) {
+            [bag[0], bag[bag.length - 1]] = [bag[bag.length - 1], bag[0]];
+          }
+        }
+        currentWord = bag.pop();
+        currentVariants = [...new Set([...buildRomajiVariants(currentWord.roma), ...(currentWord.aliases ?? [])])];
+        lastWord = currentWord.roma;
+        typed = "";
+        wordNumber += 1;
+        elements.target.textContent = String(wordNumber).padStart(2, "0");
+        elements.wordLabel.textContent = "TYPE THIS KEYWORD";
+        elements.word.textContent = currentWord.ja;
+        elements.romaji.textContent = currentWord.roma;
+        elements.romaji.classList.add("empty");
+        elements.progress.style.width = "0%";
+        elements.input.value = "";
+      }
+
+      function renderTyping() {
+        const progress = Math.min(typed.length / currentWord.roma.length, 1);
+        elements.romaji.textContent = typed || currentWord.roma;
+        elements.romaji.classList.toggle("empty", typed.length === 0);
+        elements.progress.style.width = `${progress * 100}%`;
+      }
+
+      function clearCompletionTimeout() {
+        if (completionTimeout !== null) {
+          window.clearTimeout(completionTimeout);
+          completionTimeout = null;
+        }
+      }
+
+      function scheduleAmbiguousCompletion() {
+        clearCompletionTimeout();
+        completionTimeout = window.setTimeout(() => {
+          completionTimeout = null;
+          if (state === "playing" && currentVariants.includes(typed)) solveWord();
+        }, 500);
+      }
+
+      function playTone(frequency, delay, duration, waveform, volume, endFrequency = frequency) {
+        if (!soundEnabled) return;
+        audioContext ??= new (window.AudioContext || window.webkitAudioContext)();
+        if (audioContext.state === "suspended") audioContext.resume();
+        const startTime = audioContext.currentTime + delay;
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        oscillator.type = waveform;
+        oscillator.frequency.setValueAtTime(frequency, startTime);
+        if (endFrequency !== frequency) {
+          oscillator.frequency.exponentialRampToValueAtTime(endFrequency, startTime + duration);
+        }
+        gain.gain.setValueAtTime(.0001, startTime);
+        gain.gain.exponentialRampToValueAtTime(volume, startTime + .008);
+        gain.gain.exponentialRampToValueAtTime(.0001, startTime + duration);
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+        oscillator.start(startTime);
+        oscillator.stop(startTime + duration);
+      }
+
+      function beep(frequency, duration = .065) {
+        playTone(frequency, 0, duration, "square", .025);
+      }
+
+      function playEffect(effect, value = 1) {
+        if (!soundEnabled) return;
+        const notes = {
+          correct: [[660, 0], [880, .07], [1100, .14], [1320, .21]],
+          combo: [[784, 0], [988, .06], [1175, .12], [1568, .18]],
+          levelUp: [[523, 0], [659, .09], [784, .18], [1047, .27], [1319, .36]],
+          go: [[523, 0], [659, .08], [784, .16], [1047, .24]],
+          warning: [[880, 0], [660, .13]],
+          urgent: [[1047, 0], [880, .1]],
+          finish: [[784, 0], [659, .14], [523, .28], [392, .45]]
+        };
+        if (effect === "key") {
+          beep(430 + (value % 8) * 55, .045);
+          return;
+        }
+        if (effect === "error") {
+          playTone(240, 0, .16, "sawtooth", .04, 100);
+          playTone(130, .12, .12, "square", .025, 90);
+          return;
+        }
+        if (effect === "countdown") {
+          playTone(420 + value * 100, 0, .11, "square", .035);
+          return;
+        }
+        for (const [frequency, delay] of notes[effect] ?? []) {
+          playTone(frequency, delay, .12, "square", .032);
+        }
+      }
+
+      function solveWord() {
+        clearCompletionTimeout();
+        solved += 1;
+        combo += 1;
+        maxCombo = Math.max(maxCombo, combo);
+        score += (currentWord.roma.length * 10) + Math.min(combo, 20) * 5 + Math.floor(solved / 5) * 10;
+        playEffect("correct");
+        if (solved % 5 === 0) playEffect("levelUp");
+        else if (combo % 5 === 0) playEffect("combo");
+        updateHud();
+        nextWord();
+      }
+
+      function handleKey(event) {
+        if (event.code === "Space") {
+          event.preventDefault();
+          if (!event.repeat && (state === "ready" || state === "finished")) startGame();
+          return;
+        }
+        if (state !== "playing" || event.ctrlKey || event.metaKey || event.altKey) return;
+        if (event.key === "Backspace") {
+          event.preventDefault();
+          recordKeystroke();
+          clearCompletionTimeout();
+          if (typed.length > 0) {
+            typed = typed.slice(0, -1);
+            renderTyping();
+          }
+          return;
+        }
+        if (event.key.length !== 1) return;
+        event.preventDefault();
+        recordKeystroke();
+        if (!/^[a-zA-Z'-]$/.test(event.key)) {
+          wrongKeys += 1;
+          combo = 0;
+          elements.arena.classList.remove("shake");
+          void elements.arena.offsetWidth;
+          elements.arena.classList.add("shake");
+          playEffect("error");
+          updateHud();
+          return;
+        }
+        const key = event.key.toLowerCase();
+        const nextTyped = typed + key;
+        if (currentVariants.some((variant) => variant.startsWith(nextTyped))) {
+          clearCompletionTimeout();
+          typed = nextTyped;
+          correctKeys += 1;
+          renderTyping();
+          playEffect("key", typed.length);
+          if (currentVariants.includes(typed)) {
+            const hasLongerVariant = currentVariants.some((variant) =>
+              variant.length > typed.length && variant.startsWith(typed)
+            );
+            if (hasLongerVariant) scheduleAmbiguousCompletion();
+            else solveWord();
+          }
+        } else {
+          wrongKeys += 1;
+          combo = 0;
+          elements.arena.classList.remove("shake");
+          void elements.arena.offsetWidth;
+          elements.arena.classList.add("shake");
+          playEffect("error");
+        }
+        updateHud();
+      }
+
+      function finishGame() {
+        state = "finished";
+        window.clearInterval(timerId);
+        timerId = null;
+        window.clearInterval(speedTimerId);
+        speedTimerId = null;
+        keyTimestamps.length = 0;
+        updateKeySpeed();
+        clearCompletionTimeout();
+        elements.input.disabled = true;
+        elements.start.hidden = false;
+        elements.start.textContent = "▶　PLAY AGAIN";
+        $("resultTitle").textContent = remaining === 0 ? "TIME UP!" : "SESSION END";
+        $("resultScore").textContent = score.toLocaleString("ja-JP");
+        $("resultWords").textContent = `${solved} words`;
+        $("resultAccuracy").textContent = `${accuracy()}%`;
+        $("resultCombo").textContent = `${maxCombo} hit`;
+        $("resultWpm").textContent = `${elapsed === 0 ? 0 : Math.round(correctKeys / 5 / (elapsed / 60))} WPM`;
+        playEffect("finish");
+        elements.result.hidden = false;
+      }
+
+      function beginRound() {
+        state = "playing";
+        remaining = GAME_SECONDS;
+        elapsed = 0;
+        keyTimestamps.length = 0;
+        updateKeySpeed();
+        score = 0;
+        combo = 0;
+        maxCombo = 0;
+        solved = 0;
+        correctKeys = 0;
+        wrongKeys = 0;
+        wordNumber = 0;
+        bag = [];
+        lastWord = "";
+        elements.result.hidden = true;
+        elements.start.hidden = true;
+        elements.input.disabled = false;
+        elements.input.focus();
+        updateHud();
+        nextWord();
+        speedTimerId = window.setInterval(updateKeySpeed, 100);
+        timerId = window.setInterval(() => {
+          remaining -= 1;
+          elapsed += 1;
+          if (remaining === 10 || remaining === 5) playEffect("warning");
+          else if (remaining > 0 && remaining <= 3) playEffect("urgent");
+          updateHud();
+          if (remaining <= 0) finishGame();
+        }, 1000);
+      }
+
+      function startGame() {
+        if (state === "countdown" || state === "playing") return;
+        state = "countdown";
+        elements.result.hidden = true;
+        elements.start.hidden = true;
+        elements.countdown.hidden = false;
+        let count = 3;
+        elements.countdownNumber.textContent = String(count);
+        playEffect("countdown", count);
+        const countdownId = window.setInterval(() => {
+          count -= 1;
+          if (count === 0) {
+            window.clearInterval(countdownId);
+            elements.countdown.hidden = true;
+            playEffect("go");
+            beginRound();
+          } else {
+            elements.countdownNumber.textContent = String(count);
+            playEffect("countdown", count);
+            elements.countdownNumber.style.animation = "none";
+            void elements.countdownNumber.offsetWidth;
+            elements.countdownNumber.style.animation = "";
+          }
+        }, 700);
+      }
+
+      document.addEventListener("keydown", handleKey);
+      elements.start.addEventListener("click", startGame);
+      elements.retry.addEventListener("click", startGame);
+      elements.sound.addEventListener("click", () => {
+        soundEnabled = !soundEnabled;
+        elements.sound.setAttribute("aria-pressed", String(soundEnabled));
+        elements.sound.textContent = soundEnabled ? "♪ SOUND ON" : "♪ SOUND OFF";
+        if (soundEnabled) playEffect("levelUp");
+      });
+
+      updateHud();
+    })();
+  </script>
+</body>
+</html>
