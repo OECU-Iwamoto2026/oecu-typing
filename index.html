@@ -97,6 +97,8 @@
     .sound-button:hover, .sound-button[aria-pressed="true"] { border-color: var(--cyan); color: var(--cyan); }
 
     main { padding: 38px 0 28px; }
+    .screen { min-height: min(62vh, 500px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+    .screen[hidden] { display: none; }
     .eyebrow {
       margin: 0 0 10px;
       color: var(--cyan);
@@ -106,14 +108,47 @@
     }
     h1 {
       margin: 0;
-      font-size: clamp(24px, 4vw, 39px);
+      font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      font-size: clamp(22px, 4.2vw, 38px);
       font-weight: 900;
-      letter-spacing: .055em;
+      letter-spacing: .04em;
+      line-height: 1.35;
       text-align: center;
-      text-shadow: 0 0 24px rgba(69, 243, 255, .25);
+      text-shadow: 0 0 20px rgba(69, 243, 255, .2);
     }
-    h1 span { color: var(--cyan); }
+    h1 .title-highlight {
+      color: var(--cyan);
+      font-size: 1.12em;
+      white-space: nowrap;
+      text-shadow: 0 0 18px rgba(69, 243, 255, .55);
+    }
     .intro { margin: 10px 0 28px; color: var(--muted); font-size: 12px; text-align: center; }
+    .title-best { display: grid; gap: 7px; margin: 8px 0 20px; color: var(--muted); font: 700 10px monospace; letter-spacing: .14em; }
+    .title-best-value { display: inline-flex; align-items: center; gap: 7px; }
+    .title-best strong { color: var(--cyan); font: 800 24px monospace; letter-spacing: 0; }
+    .best-crown { font: 18px/1 "Segoe UI Emoji", "Apple Color Emoji", sans-serif; }
+    .record-archive-toggle { margin-top: 8px; }
+    .record-archive { width: min(100%, 760px); max-height: min(40dvh, 360px); overflow-y: auto; margin: 14px 0 0; padding: 12px; border: 1px solid var(--line); border-radius: 4px; background: rgba(13, 19, 34, .94); text-align: left; }
+    .record-archive > h2 { margin: 0 0 10px; color: var(--muted); font: 700 10px monospace; letter-spacing: .12em; text-align: center; }
+    .record-archive-groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .record-archive-group h3 { margin: 0 0 7px; color: var(--muted); font: 700 10px monospace; letter-spacing: .08em; }
+    .screen-note { margin: 12px 0 0; color: var(--muted); font-size: 11px; }
+    .screen-heading { margin: 0 0 8px; color: var(--text); font: 900 22px monospace; letter-spacing: .1em; }
+    .difficulty-screen { max-width: 680px; margin: 0 auto; }
+    .difficulty-screen .intro { margin-bottom: 22px; }
+    .screen-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    .secondary-button {
+      min-width: 120px;
+      padding: 12px 18px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--text);
+      background: rgba(255,255,255,.035);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .secondary-button:hover { border-color: var(--cyan); color: var(--cyan); }
 
     .hud {
       display: grid;
@@ -146,6 +181,32 @@
     #timerValue { color: var(--lime); }
     #scoreValue { color: var(--cyan); }
     #comboValue { color: var(--pink); }
+    #scoreValue.bump { animation: scoreBump .32s ease-out; }
+    .game-settings {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 0 0 12px;
+      color: var(--muted);
+      font: 700 10px monospace;
+      letter-spacing: .1em;
+    }
+    .game-settings select {
+      padding: 7px 30px 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--text);
+      background: #101523;
+      font: 600 12px/1.2 "Segoe UI", "Noto Sans JP", sans-serif;
+    }
+    .game-settings select:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+    .game-settings select:disabled { opacity: .6; }
+    .best-summary { color: var(--muted); font: 10px monospace; letter-spacing: .04em; }
+    .best-summary-value { display: inline-flex; align-items: center; gap: 4px; margin-left: 5px; }
+    .best-summary strong { color: var(--cyan); }
+    .record-status { min-height: 16px; margin: -5px 0 8px; color: var(--danger); font-size: 10px; text-align: center; }
 
     .arena {
       position: relative;
@@ -182,6 +243,39 @@
       box-shadow: 0 0 12px var(--cyan);
       transition: width .16s ease;
     }
+    .word.target-shake { animation: targetShake .12s steps(2, end); }
+    .visual-paw {
+      position: absolute;
+      z-index: 5;
+      top: 0;
+      left: 0;
+      color: #fff;
+      font: 52px/1 "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+    }
+    .visual-paw.active { animation: pawStrike .28s ease-out both; }
+    .visual-cyclist {
+      position: absolute;
+      z-index: 5;
+      top: 0;
+      left: 0;
+      display: grid;
+      width: 82px;
+      height: 82px;
+      place-items: center;
+      border: 1px solid rgba(69, 243, 255, .55);
+      border-radius: 50%;
+      color: #fff;
+      background: rgba(9, 11, 20, .96);
+      box-shadow: 0 0 24px rgba(255, 79, 216, .55);
+      font: 68px/1 "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-50%);
+    }
+    .visual-cyclist.active { animation: cyclistCross 1.15s linear both; }
     .word-label { margin: 0 0 11px; color: var(--muted); font-size: 12px; text-align: center; }
     .word {
       min-height: 57px;
@@ -204,6 +298,19 @@
       text-shadow: 0 0 12px rgba(196,255,85,.35);
     }
     .romaji.empty { color: #65708b; text-shadow: none; }
+    .game-reward {
+      min-height: 23px;
+      margin: -18px 0 8px;
+      color: var(--lime);
+      font: 900 12px/1.4 monospace;
+      letter-spacing: .12em;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(5px) scale(.96);
+      pointer-events: none;
+    }
+    .game-reward.show { animation: rewardPop .95s ease-out both; }
+    .game-reward.level-up { color: var(--cyan); font-size: 15px; }
     .input-wrap { position: relative; width: min(460px, 100%); margin: 0 auto; }
     .input-wrap::before {
       position: absolute;
@@ -249,7 +356,7 @@
       transition: transform .18s, box-shadow .18s;
     }
     .primary-button:hover { transform: translateY(-2px); box-shadow: 0 0 32px rgba(69,243,255,.42); }
-    .primary-button:focus-visible, .sound-button:focus-visible { outline: 2px solid white; outline-offset: 3px; }
+    .primary-button:focus-visible, .secondary-button:focus-visible, .sound-button:focus-visible { outline: 2px solid white; outline-offset: 3px; }
     .instructions { margin: 17px 0 0; color: var(--muted); font-size: 11px; text-align: center; }
     .instructions kbd { padding: 2px 5px; border: 1px solid var(--line); border-radius: 3px; color: #dce4ff; background: rgba(255,255,255,.04); font: 10px monospace; }
     footer { padding: 14px 0 26px; color: #656d85; font: 9px/1.6 monospace; letter-spacing: .08em; text-align: center; }
@@ -264,29 +371,64 @@
       backdrop-filter: blur(4px);
     }
     .overlay[hidden] { display: none; }
+    #resultOverlay {
+      position: fixed;
+      z-index: 10;
+      inset: 0;
+      padding: 16px;
+    }
     .count-number { color: var(--cyan); font: 900 clamp(70px, 16vw, 120px)/1 monospace; text-shadow: 0 0 35px rgba(69,243,255,.7); animation: pop .75s ease both; }
-    .result-card { width: min(360px, calc(100% - 32px)); padding: 28px; border: 1px solid var(--cyan); border-radius: 6px; background: rgba(13, 19, 34, .97); text-align: center; box-shadow: 0 0 40px rgba(69,243,255,.12); }
+    .result-card { width: min(400px, 100%); max-height: min(90dvh, 680px); overflow-y: auto; overscroll-behavior: contain; padding: 28px; border: 1px solid var(--cyan); border-radius: 6px; background: rgba(13, 19, 34, .97); text-align: center; box-shadow: 0 0 40px rgba(69,243,255,.12); }
     .result-card h2 { margin: 0 0 6px; color: var(--cyan); font: 900 20px monospace; letter-spacing: .12em; }
     .result-card p { margin: 0 0 18px; color: var(--muted); font-size: 11px; }
     .result-score { margin: 13px 0; font: 900 42px monospace; }
     .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 18px 0 22px; }
     .result-stat { padding: 10px; border: 1px solid var(--line); color: var(--muted); font-size: 10px; }
     .result-stat strong { display: block; margin-top: 5px; color: var(--text); font: 700 17px monospace; }
+    .result-record-notice { min-height: 18px; margin: -10px 0 8px !important; color: var(--lime) !important; font-weight: 800; }
+    .record-history { margin: 14px 0 18px; text-align: left; }
+    .record-history h3 { margin: 0 0 7px; color: var(--muted); font: 700 10px monospace; letter-spacing: .12em; }
+    .record-list { display: grid; gap: 5px; margin: 0; padding: 0; list-style: none; }
+    .record-list li { display: flex; justify-content: space-between; gap: 8px; padding: 7px 9px; border: 1px solid var(--line); color: var(--muted); font-size: 10px; }
+    .record-list strong { color: var(--text); font: 700 12px monospace; }
 
     @keyframes blink { 50% { opacity: .35; } }
+    @keyframes targetShake {
+      25% { transform: translateX(-4px) rotate(-1deg); }
+      50% { transform: translateX(4px) rotate(1deg); }
+      75% { transform: translateX(-2px); }
+    }
+    @keyframes pawStrike {
+      0% { left: var(--paw-start-x); opacity: .35; transform: translate(-50%, -50%) scale(.55) rotate(-25deg); }
+      65% { left: var(--paw-target-x); opacity: 1; transform: translate(-50%, -50%) scale(1.3) rotate(12deg); }
+      100% { left: var(--paw-target-x); opacity: .96; transform: translate(-50%, -50%) scale(1.08) rotate(-5deg); }
+    }
+    @keyframes cyclistCross {
+      from { left: var(--cyclist-start-x); opacity: .98; }
+      to { left: var(--cyclist-end-x); opacity: .98; }
+    }
     @keyframes shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
     @keyframes pop { 0% { opacity: 0; transform: scale(.65); } 40% { opacity: 1; transform: scale(1.12); } 100% { transform: scale(1); } }
+    @keyframes scoreBump { 45% { transform: scale(1.2); color: var(--lime); } }
+    @keyframes rewardPop { 0% { opacity: 0; transform: translateY(5px) scale(.96); } 20%, 75% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-7px) scale(1.02); } }
     @media (max-width: 600px) {
       .shell { width: min(100% - 24px, 520px); }
       .topbar { min-height: 68px; }
       .top-right { gap: 10px; }
       .live-label { font-size: 8px; }
       main { padding-top: 28px; }
+      .screen { min-height: min(60vh, 440px); }
+      .screen-actions { width: 100%; }
+      .screen-actions button { flex: 1 1 130px; }
       .hud { grid-template-columns: repeat(2, 1fr); gap: 8px; }
       .stat { min-height: 66px; padding: 10px 12px; }
       .arena { min-height: 318px; padding: 20px 14px 23px; }
       .word { min-height: 46px; }
       .romaji { margin-bottom: 21px; }
+      .game-settings { gap: 7px; }
+      .best-summary { flex-basis: 100%; text-align: center; }
+      .record-archive-groups { grid-template-columns: 1fr; }
+      .result-card { padding: 22px 18px; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
@@ -300,62 +442,123 @@
         <div class="brand-mark"><span>O</span></div>
         <div>
           <div class="brand-name">OECU TYPE<span style="color:var(--cyan)">//</span>ARENA</div>
-          <div class="brand-sub">TECH KEYWORD BATTLE</div>
+          <div class="brand-sub">技術キーワードタイピング</div>
         </div>
       </div>
       <div class="top-right">
-        <span class="live-label">SYSTEM ONLINE</span>
-        <button class="sound-button" id="soundButton" type="button" aria-pressed="false">♪ SOUND OFF</button>
+        <span class="live-label">プレイ準備完了</span>
+        <button class="sound-button" id="soundButton" type="button" aria-pressed="false">♪ 音声オフ</button>
       </div>
     </header>
 
     <main>
-      <p class="eyebrow">OSAKA ELECTRO-COMMUNICATION UNIVERSITY / IT EDITION</p>
-      <h1>TYPE <span>FASTER.</span> THINK SMARTER.</h1>
-      <p class="intro">大阪電気通信大学の学びにつながるITキーワードを打ち込め！</p>
-
-      <section class="hud" aria-label="ゲームステータス">
-        <div class="stat"><div class="stat-label">TIME LEFT</div><div class="stat-value" id="timerValue">60<small> sec</small></div></div>
-        <div class="stat"><div class="stat-label">SCORE</div><div class="stat-value" id="scoreValue">00000</div></div>
-        <div class="stat"><div class="stat-label">COMBO</div><div class="stat-value" id="comboValue">0<small> hit</small></div></div>
-        <div class="stat"><div class="stat-label">ACCURACY</div><div class="stat-value" id="accuracyValue">100<small>%</small></div></div>
-        <div class="stat"><div class="stat-label">KEYS / SEC</div><div class="stat-value" id="speedValue">0.0<small> KPS</small></div></div>
-      </section>
-
-      <section class="arena" id="arena" aria-label="タイピングエリア">
-        <div class="arena-top">
-          <span class="round-label">TARGET // <span id="targetNumber">--</span></span>
-          <span class="level-label">LEVEL <strong id="levelValue">01</strong></span>
+      <section class="screen title-screen" id="titleScreen" aria-labelledby="page-title">
+        <p class="eyebrow">大阪電気通信大学 / IT版</p>
+        <h1 id="page-title">その<span class="title-highlight">一打</span>が、次の自分をつくる。</h1>
+        <p class="intro">大阪電気通信大学の学びにつながるITキーワードを打ち込め！</p>
+        <div class="title-best">
+          <span id="titleBestLabel">スタンダードの自己ベスト</span>
+          <span class="title-best-value">
+            <span class="best-crown" id="titleBestCrown" aria-hidden="true" hidden>👑</span>
+            <strong id="titleBestValue">--</strong>
+          </span>
         </div>
-        <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
-        <p class="word-label" id="wordLabel">READY WHEN YOU ARE</p>
-        <p class="word" id="wordDisplay" aria-live="polite">準備完了</p>
-        <p class="romaji" id="romajiDisplay" aria-live="polite">STARTを押してチャレンジ開始</p>
-        <div class="input-wrap">
-          <input id="typeInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="キーワードをローマ字で入力" placeholder="入力内容はワードの下に表示されます" readonly disabled>
-        </div>
-        <p class="hint">表記ゆれ対応：shu / syu・shi / si・chi / ti・小さい「っ」「ゃゅょ」・n / nn / n' など</p>
-        <div class="overlay" id="countdownOverlay" hidden aria-live="assertive"><span class="count-number" id="countdownNumber">3</span></div>
-        <div class="overlay" id="resultOverlay" hidden aria-live="polite">
-          <div class="result-card">
-            <h2 id="resultTitle">TIME UP!</h2>
-            <p>おつかれさま！今回の戦績はこちら</p>
-            <div class="result-score" id="resultScore">0</div>
-            <div class="result-grid">
-              <div class="result-stat">正解ワード<strong id="resultWords">0</strong></div>
-              <div class="result-stat">正確率<strong id="resultAccuracy">100%</strong></div>
-              <div class="result-stat">最高コンボ<strong id="resultCombo">0</strong></div>
-              <div class="result-stat">入力速度<strong id="resultWpm">0 WPM</strong></div>
-            </div>
-            <button class="primary-button" id="retryButton" type="button">もう一度プレイ</button>
+        <button class="primary-button" id="titleStartButton" type="button">▶　ゲームを始める</button>
+        <button class="secondary-button record-archive-toggle" id="recordArchiveToggle" type="button" aria-expanded="false" aria-controls="recordArchive">過去の自己ベストを見る</button>
+        <section class="record-archive" id="recordArchive" aria-labelledby="recordArchiveHeading" hidden>
+          <h2 id="recordArchiveHeading">過去の自己ベスト</h2>
+          <div class="record-archive-groups">
+            <section class="record-archive-group" aria-labelledby="archiveEasyHeading">
+              <h3 id="archiveEasyHeading">ゆったり</h3>
+              <ol class="record-list" id="archiveEasyList"></ol>
+            </section>
+            <section class="record-archive-group" aria-labelledby="archiveNormalHeading">
+              <h3 id="archiveNormalHeading">スタンダード</h3>
+              <ol class="record-list" id="archiveNormalList"></ol>
+            </section>
+            <section class="record-archive-group" aria-labelledby="archiveHardHeading">
+              <h3 id="archiveHardHeading">チャレンジ</h3>
+              <ol class="record-list" id="archiveHardList"></ol>
+            </section>
           </div>
-        </div>
+        </section>
+        <p class="screen-note">自己記録はこのブラウザーに保存されます</p>
       </section>
 
-      <div class="controls"><button class="primary-button" id="startButton" type="button">▶　START GAME</button></div>
-      <p class="instructions">開始: <kbd>SPACE</kbd>　|　入力: <kbd>A–Z</kbd>　|　戻る: <kbd>BACKSPACE</kbd>　|　制限時間 60秒</p>
+      <section class="screen difficulty-screen" id="difficultyScreen" aria-labelledby="difficultyHeading" hidden>
+        <p class="eyebrow">次の挑戦に備えよう</p>
+        <h2 class="screen-heading" id="difficultyHeading">難易度を選択</h2>
+        <p class="intro">プレイ時間を選んで、ベストスコアに挑戦しよう。</p>
+        <div class="game-settings">
+          <label for="difficultySelect">難易度</label>
+          <select id="difficultySelect">
+            <option value="easy">ゆったり — 75秒</option>
+            <option value="normal" selected>スタンダード — 60秒</option>
+            <option value="hard">チャレンジ — 45秒</option>
+          </select>
+          <span class="best-summary" id="bestSummary">自己ベスト<span class="best-summary-value"><span class="best-crown" id="bestCrown" aria-hidden="true" hidden>👑</span><strong id="bestValue">--</strong></span></span>
+        </div>
+        <p class="record-status" id="recordStatus" role="status"></p>
+        <div class="screen-actions">
+          <button class="secondary-button" id="difficultyBackButton" type="button">戻る</button>
+          <button class="primary-button" id="startButton" type="button">▶　ゲーム開始</button>
+        </div>
+        <p class="screen-note">難易度別に自己ベストを保存します</p>
+      </section>
+
+      <section id="gameScreen" aria-label="ゲーム" hidden>
+        <section class="hud" aria-label="ゲームステータス">
+          <div class="stat"><div class="stat-label">残り時間</div><div class="stat-value" id="timerValue">60<small>秒</small></div></div>
+          <div class="stat"><div class="stat-label">スコア</div><div class="stat-value" id="scoreValue">00000</div></div>
+          <div class="stat"><div class="stat-label">連続正解</div><div class="stat-value" id="comboValue">0<small>回</small></div></div>
+          <div class="stat"><div class="stat-label">正確率</div><div class="stat-value" id="accuracyValue">100<small>%</small></div></div>
+          <div class="stat"><div class="stat-label">入力速度</div><div class="stat-value" id="speedValue">0.0<small>打鍵/秒</small></div></div>
+        </section>
+
+        <section class="arena" id="arena" aria-label="タイピングエリア">
+          <div class="arena-top">
+            <span class="round-label">問題 <span id="targetNumber">--</span></span>
+            <span class="level-label">レベル <strong id="levelValue">01</strong></span>
+          </div>
+          <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+          <p class="word-label" id="wordLabel">このキーワードを入力</p>
+          <p class="word" id="wordDisplay" aria-live="polite">準備完了</p>
+          <p class="romaji" id="romajiDisplay" aria-live="polite">開始するとローマ字が表示されます</p>
+          <span class="visual-paw" id="visualPaw" aria-hidden="true">🐾</span>
+          <span class="visual-cyclist" id="visualCyclist" aria-hidden="true">🚴</span>
+          <p class="game-reward" id="gameReward" aria-live="polite"></p>
+          <div class="input-wrap">
+            <input id="typeInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="キーワードをローマ字で入力" placeholder="入力内容はワードの下に表示されます" readonly disabled>
+          </div>
+          <p class="hint">表記ゆれ対応：shu / syu・shi / si・chi / ti・小さい「っ」「ゃゅょ」・n / nn / n' など</p>
+          <div class="overlay" id="countdownOverlay" hidden aria-live="assertive"><span class="count-number" id="countdownNumber">3</span></div>
+          <div class="overlay" id="resultOverlay" role="dialog" aria-modal="true" aria-labelledby="resultTitle" hidden>
+            <div class="result-card">
+              <h2 id="resultTitle">時間終了</h2>
+              <p>おつかれさま！今回の戦績はこちら</p>
+              <div class="result-score" id="resultScore">0</div>
+              <div class="result-grid">
+                <div class="result-stat">正解数<strong id="resultWords">0問</strong></div>
+                <div class="result-stat">正確率<strong id="resultAccuracy">100%</strong></div>
+                <div class="result-stat">最高コンボ<strong id="resultCombo">0</strong></div>
+                <div class="result-stat">入力速度<strong id="resultWpm">0 語/分</strong></div>
+              </div>
+              <p class="result-record-notice" id="resultRecordNotice" aria-live="polite"></p>
+              <section class="record-history" aria-label="この難易度のベスト記録">
+                <h3 id="historyHeading">自己ベスト記録</h3>
+                <ol class="record-list" id="recordList"></ol>
+              </section>
+              <div class="screen-actions">
+                <button class="secondary-button" id="resultTitleButton" type="button">タイトルへ戻る</button>
+                <button class="primary-button" id="retryButton" type="button">もう一度プレイ</button>
+              </div>
+            </div>
+          </div>
+        </section>
+        <p class="instructions">入力: <kbd>A–Z</kbd>　|　戻る: <kbd>BACKSPACE</kbd>　|　レベル2から妨害表示（見た目のみ・時間や入力に影響なし）</p>
+      </section>
     </main>
-    <footer>OECU TYPE//ARENA <span>—</span> BUILT FOR THE NEXT GENERATION OF TECH CREATORS</footer>
+    <footer>OECU TYPE//ARENA <span>—</span> 次世代の技術をつくる人のために</footer>
   </div>
 
   <script>
@@ -471,7 +674,13 @@
         );
       }
 
-      const GAME_SECONDS = 60;
+      const DIFFICULTIES = {
+        easy: { label: "ゆったり", seconds: 75 },
+        normal: { label: "スタンダード", seconds: 60 },
+        hard: { label: "チャレンジ", seconds: 45 }
+      };
+      const GAME_SECONDS = DIFFICULTIES.normal.seconds;
+      const RECORDS_KEY = "oecu-type-arena-records-v1";
       const $ = (id) => document.getElementById(id);
       const elements = {
         arena: $("arena"), timer: $("timerValue"), score: $("scoreValue"),
@@ -481,10 +690,30 @@
         romaji: $("romajiDisplay"), input: $("typeInput"), progress: $("progressBar"),
         start: $("startButton"), retry: $("retryButton"), countdown: $("countdownOverlay"),
         countdownNumber: $("countdownNumber"), result: $("resultOverlay"),
-        sound: $("soundButton")
+        sound: $("soundButton"), difficulty: $("difficultySelect"),
+        bestSummary: $("bestSummary"), bestValue: $("bestValue"), bestCrown: $("bestCrown"),
+        titleBestLabel: $("titleBestLabel"), titleBestValue: $("titleBestValue"),
+        titleBestCrown: $("titleBestCrown"), recordArchiveToggle: $("recordArchiveToggle"),
+        recordArchive: $("recordArchive"),
+        archiveHeadings: {
+          easy: $("archiveEasyHeading"), normal: $("archiveNormalHeading"), hard: $("archiveHardHeading")
+        },
+        archiveLists: {
+          easy: $("archiveEasyList"), normal: $("archiveNormalList"), hard: $("archiveHardList")
+        },
+        titleScreen: $("titleScreen"), difficultyScreen: $("difficultyScreen"),
+        gameScreen: $("gameScreen"), titleStart: $("titleStartButton"),
+        difficultyBack: $("difficultyBackButton"), resultTitleButton: $("resultTitleButton"),
+        recordStatus: $("recordStatus"), recordNotice: $("resultRecordNotice"),
+        historyHeading: $("historyHeading"), recordList: $("recordList"),
+        visualPaw: $("visualPaw"), visualCyclist: $("visualCyclist"),
+        reward: $("gameReward")
       };
 
       let state = "ready";
+      let activeScreen = "title";
+      let selectedDifficulty = elements.difficulty.value;
+      let records = null;
       let currentWord = null;
       let currentVariants = [];
       let typed = "";
@@ -502,9 +731,140 @@
       let timerId = null;
       let speedTimerId = null;
       let completionTimeout = null;
+      let pawTimeout = null;
+      let cyclistTimeout = null;
+      let rewardTimeout = null;
       const keyTimestamps = [];
       let soundEnabled = false;
       let audioContext = null;
+
+      function emptyRecords() {
+        return { version: 1, scores: { easy: [], normal: [], hard: [] } };
+      }
+
+      function isValidRecord(record) {
+        return record && Number.isSafeInteger(record.score) && record.score >= 0
+          && Number.isSafeInteger(record.solved) && record.solved >= 0
+          && Number.isSafeInteger(record.accuracy) && record.accuracy >= 0 && record.accuracy <= 100
+          && Number.isSafeInteger(record.maxCombo) && record.maxCombo >= 0
+          && Number.isSafeInteger(record.wpm) && record.wpm >= 0
+          && typeof record.playedAt === "string" && !Number.isNaN(Date.parse(record.playedAt));
+      }
+
+      function isValidRecordStore(value) {
+        return value && value.version === 1 && value.scores
+          && Object.keys(DIFFICULTIES).every((difficulty) =>
+            Array.isArray(value.scores[difficulty])
+            && value.scores[difficulty].length <= 5
+            && value.scores[difficulty].every(isValidRecord)
+          );
+      }
+
+      function readRecords() {
+        try {
+          const saved = window.localStorage.getItem(RECORDS_KEY);
+          if (saved === null) return emptyRecords();
+          const parsed = JSON.parse(saved);
+          if (!isValidRecordStore(parsed)) throw new TypeError("Unsupported record format");
+          return parsed;
+        } catch {
+          elements.recordStatus.textContent = "保存記録を読み込めません。データは変更せず、今回のプレイは続行できます。";
+          return null;
+        }
+      }
+
+      function updateRecordsSummary() {
+        const difficulty = elements.difficulty.value;
+        const best = records?.scores[difficulty]?.[0];
+        elements.bestValue.textContent = best ? best.score.toLocaleString("ja-JP") : "--";
+        elements.bestCrown.hidden = !best;
+        elements.bestSummary.setAttribute("aria-label", `${DIFFICULTIES[difficulty].label}の自己ベスト ${best?.score ?? "なし"}`);
+        elements.titleBestLabel.textContent = `${DIFFICULTIES[difficulty].label}の自己ベスト`;
+        elements.titleBestValue.textContent = best ? best.score.toLocaleString("ja-JP") : "--";
+        elements.titleBestCrown.hidden = !best;
+      }
+
+      function showScreen(screen) {
+        activeScreen = screen;
+        elements.titleScreen.hidden = screen !== "title";
+        elements.difficultyScreen.hidden = screen !== "difficulty";
+        elements.gameScreen.hidden = screen !== "game";
+      }
+
+      function showDifficultyScreen() {
+        if (state === "playing" || state === "countdown") return;
+        showScreen("difficulty");
+        updateRecordsSummary();
+        elements.difficulty.focus();
+      }
+
+      function returnToTitle() {
+        if (state === "playing" || state === "countdown") return;
+        state = "ready";
+        elements.result.hidden = true;
+        elements.difficulty.disabled = false;
+        remaining = DIFFICULTIES[elements.difficulty.value].seconds;
+        updateHud();
+        showScreen("title");
+        elements.titleStart.focus();
+      }
+
+      function renderRecordHistory(difficulty, heading = elements.historyHeading, list = elements.recordList) {
+        heading.textContent = `${DIFFICULTIES[difficulty].label}の自己ベスト記録`;
+        list.replaceChildren();
+        if (!records) {
+          const item = document.createElement("li");
+          item.textContent = "保存記録を利用できません";
+          list.append(item);
+          return;
+        }
+        const history = records.scores[difficulty];
+        if (history.length === 0) {
+          const item = document.createElement("li");
+          item.textContent = "記録はまだありません";
+          list.append(item);
+          return;
+        }
+        for (const [index, record] of history.slice(0, 5).entries()) {
+          const item = document.createElement("li");
+          const label = document.createElement("span");
+          const scoreValue = document.createElement("strong");
+          const date = new Date(record.playedAt).toLocaleDateString("ja-JP", { month: "2-digit", day: "2-digit" });
+          label.textContent = `${String(index + 1).padStart(2, "0")}　${date} · ${record.solved}問`;
+          scoreValue.textContent = record.score.toLocaleString("ja-JP");
+          item.append(label, scoreValue);
+          list.append(item);
+        }
+      }
+
+      function renderRecordArchive() {
+        for (const difficulty of Object.keys(DIFFICULTIES)) {
+          renderRecordHistory(difficulty, elements.archiveHeadings[difficulty], elements.archiveLists[difficulty]);
+        }
+      }
+
+      function saveRecord(result) {
+        if (!records) return { saved: false, newRecord: false };
+        const history = records.scores[result.difficulty];
+        const newRecord = result.score > 0 && (!history[0] || result.score > history[0].score);
+        const updatedRecords = {
+          version: 1,
+          scores: {
+            ...records.scores,
+            [result.difficulty]: [...history, { ...result, playedAt: new Date().toISOString() }]
+              .sort((a, b) => b.score - a.score || b.solved - a.solved || b.accuracy - a.accuracy)
+              .slice(0, 5)
+          }
+        };
+        try {
+          window.localStorage.setItem(RECORDS_KEY, JSON.stringify(updatedRecords));
+          records = updatedRecords;
+          return { saved: true, newRecord };
+        } catch {
+          elements.recordStatus.textContent = "記録を保存できませんでした。ブラウザーの保存領域を確認してください。";
+          return { saved: false, newRecord: false };
+        }
+      }
 
       function accuracy() {
         const total = correctKeys + wrongKeys;
@@ -512,22 +872,27 @@
       }
 
       function updateHud() {
-        elements.timer.innerHTML = `${remaining}<small> sec</small>`;
+        elements.timer.innerHTML = `${remaining}<small>秒</small>`;
         elements.timer.style.color = remaining <= 10 ? "var(--danger)" : "";
         elements.score.textContent = String(score).padStart(5, "0");
-        elements.combo.innerHTML = `${combo}<small> hit</small>`;
+        elements.combo.innerHTML = `${combo}<small>回</small>`;
         elements.accuracy.innerHTML = `${accuracy()}<small>%</small>`;
         elements.level.textContent = String(Math.floor(solved / 5) + 1).padStart(2, "0");
       }
 
       function updateKeySpeed(now = performance.now()) {
         while (keyTimestamps.length > 0 && keyTimestamps[0] <= now - 1000) keyTimestamps.shift();
-        elements.speed.innerHTML = `${keyTimestamps.length.toFixed(1)}<small> KPS</small>`;
+        elements.speed.innerHTML = `${keyTimestamps.length.toFixed(1)}<small>打鍵/秒</small>`;
       }
 
       function recordKeystroke() {
         keyTimestamps.push(performance.now());
         updateKeySpeed();
+        if (Math.floor(solved / 5) + 1 >= 2) {
+          elements.word.classList.remove("target-shake");
+          void elements.word.offsetWidth;
+          elements.word.classList.add("target-shake");
+        }
       }
 
       function nextWord() {
@@ -543,12 +908,14 @@
         typed = "";
         wordNumber += 1;
         elements.target.textContent = String(wordNumber).padStart(2, "0");
-        elements.wordLabel.textContent = "TYPE THIS KEYWORD";
+        elements.wordLabel.textContent = "このキーワードを入力";
         elements.word.textContent = currentWord.ja;
+        elements.word.classList.remove("target-shake");
         elements.romaji.textContent = currentWord.roma;
         elements.romaji.classList.add("empty");
         elements.progress.style.width = "0%";
         elements.input.value = "";
+        scheduleCyclist();
       }
 
       function renderTyping() {
@@ -556,6 +923,88 @@
         elements.romaji.textContent = typed || currentWord.roma;
         elements.romaji.classList.toggle("empty", typed.length === 0);
         elements.progress.style.width = `${progress * 100}%`;
+      }
+
+      function showPawOverTypedCharacter() {
+        if (typed.length === 0 || !elements.romaji.firstChild) return;
+        const range = document.createRange();
+        range.setStart(elements.romaji.firstChild, typed.length - 1);
+        range.setEnd(elements.romaji.firstChild, typed.length);
+        const characterRect = range.getBoundingClientRect();
+        const arenaRect = elements.arena.getBoundingClientRect();
+        const targetX = characterRect.left + characterRect.width / 2 - arenaRect.left - elements.arena.clientLeft;
+        const targetY = characterRect.top + characterRect.height / 2 - arenaRect.top - elements.arena.clientTop;
+        const fromLeft = (wordNumber + typed.length) % 2 === 0;
+        const startX = fromLeft ? -elements.visualPaw.offsetWidth : elements.arena.clientWidth + elements.visualPaw.offsetWidth;
+
+        if (pawTimeout !== null) window.clearTimeout(pawTimeout);
+        elements.visualPaw.style.top = `${targetY}px`;
+        elements.visualPaw.style.left = `${targetX}px`;
+        elements.visualPaw.style.setProperty("--paw-start-x", `${startX}px`);
+        elements.visualPaw.style.setProperty("--paw-target-x", `${targetX}px`);
+        elements.visualPaw.classList.remove("active");
+        void elements.visualPaw.offsetWidth;
+        elements.visualPaw.classList.add("active");
+        pawTimeout = window.setTimeout(() => {
+          elements.visualPaw.classList.remove("active");
+          pawTimeout = null;
+        }, 330);
+      }
+
+      function clearCyclist() {
+        if (cyclistTimeout !== null) {
+          window.clearTimeout(cyclistTimeout);
+          cyclistTimeout = null;
+        }
+        elements.visualCyclist.classList.remove("active");
+      }
+
+      function showCyclist() {
+        clearCyclist();
+        const arenaRect = elements.arena.getBoundingClientRect();
+        const wordRect = elements.word.getBoundingClientRect();
+        const targetY = wordRect.top + wordRect.height / 2 - arenaRect.top - elements.arena.clientTop;
+        elements.visualCyclist.style.top = `${targetY}px`;
+        elements.visualCyclist.style.setProperty("--cyclist-start-x", `${-elements.visualCyclist.offsetWidth}px`);
+        elements.visualCyclist.style.setProperty("--cyclist-end-x", `${elements.arena.clientWidth}px`);
+        void elements.visualCyclist.offsetWidth;
+        elements.visualCyclist.classList.add("active");
+        cyclistTimeout = window.setTimeout(clearCyclist, 1200);
+      }
+
+      function clearVisualEffects() {
+        if (pawTimeout !== null) {
+          window.clearTimeout(pawTimeout);
+          pawTimeout = null;
+        }
+        elements.visualPaw.classList.remove("active");
+        clearCyclist();
+      }
+
+      function scheduleCyclist() {
+        const level = Math.floor(solved / 5) + 1;
+        if (state !== "playing" || level < 4) return;
+        const wordsCompletedThisLevel = solved % 5;
+        const interval = level < 6 ? 3 : 2;
+        if (wordsCompletedThisLevel !== 0 && wordsCompletedThisLevel % interval !== 0) return;
+        showCyclist();
+      }
+
+      function showReward(message, isLevelUp) {
+        if (rewardTimeout !== null) window.clearTimeout(rewardTimeout);
+        elements.reward.textContent = message;
+        elements.reward.classList.remove("show", "level-up");
+        if (isLevelUp) elements.reward.classList.add("level-up");
+        void elements.reward.offsetWidth;
+        elements.reward.classList.add("show");
+        rewardTimeout = window.setTimeout(() => {
+          elements.reward.classList.remove("show", "level-up");
+          elements.reward.textContent = "";
+          rewardTimeout = null;
+        }, 1000);
+        elements.score.classList.remove("bump");
+        void elements.score.offsetWidth;
+        elements.score.classList.add("bump");
       }
 
       function clearCompletionTimeout() {
@@ -632,9 +1081,15 @@
         solved += 1;
         combo += 1;
         maxCombo = Math.max(maxCombo, combo);
-        score += (currentWord.roma.length * 10) + Math.min(combo, 20) * 5 + Math.floor(solved / 5) * 10;
+        const points = (currentWord.roma.length * 10) + Math.min(combo, 20) * 5 + Math.floor(solved / 5) * 10;
+        score += points;
+        const isLevelUp = solved % 5 === 0;
+        const reward = isLevelUp
+          ? `レベル${Math.floor(solved / 5) + 1}アップ！ +${points}点`
+          : combo % 5 === 0 ? `${combo}連続正解！ +${points}点` : `+${points}点`;
+        showReward(reward, isLevelUp);
         playEffect("correct");
-        if (solved % 5 === 0) playEffect("levelUp");
+        if (isLevelUp) playEffect("levelUp");
         else if (combo % 5 === 0) playEffect("combo");
         updateHud();
         nextWord();
@@ -642,8 +1097,14 @@
 
       function handleKey(event) {
         if (event.code === "Space") {
+          if (event.target instanceof HTMLButtonElement || event.target === elements.difficulty
+            || event.target === elements.sound) return;
           event.preventDefault();
-          if (!event.repeat && (state === "ready" || state === "finished")) startGame();
+          if (!event.repeat) {
+            if (activeScreen === "title") showDifficultyScreen();
+            else if (activeScreen === "difficulty" && state === "ready") startGame();
+            else if (activeScreen === "game" && state === "finished") startGame();
+          }
           return;
         }
         if (state !== "playing" || event.ctrlKey || event.metaKey || event.altKey) return;
@@ -654,6 +1115,7 @@
           if (typed.length > 0) {
             typed = typed.slice(0, -1);
             renderTyping();
+            if (Math.floor(solved / 5) + 1 >= 3) showPawOverTypedCharacter();
           }
           return;
         }
@@ -663,6 +1125,7 @@
         if (!/^[a-zA-Z'-]$/.test(event.key)) {
           wrongKeys += 1;
           combo = 0;
+          if (Math.floor(solved / 5) + 1 >= 3) showPawOverTypedCharacter();
           elements.arena.classList.remove("shake");
           void elements.arena.offsetWidth;
           elements.arena.classList.add("shake");
@@ -677,6 +1140,7 @@
           typed = nextTyped;
           correctKeys += 1;
           renderTyping();
+          if (Math.floor(solved / 5) + 1 >= 3) showPawOverTypedCharacter();
           playEffect("key", typed.length);
           if (currentVariants.includes(typed)) {
             const hasLongerVariant = currentVariants.some((variant) =>
@@ -697,6 +1161,7 @@
       }
 
       function finishGame() {
+        if (state === "finished") return;
         state = "finished";
         window.clearInterval(timerId);
         timerId = null;
@@ -705,22 +1170,41 @@
         keyTimestamps.length = 0;
         updateKeySpeed();
         clearCompletionTimeout();
+        clearVisualEffects();
+        if (rewardTimeout !== null) {
+          window.clearTimeout(rewardTimeout);
+          rewardTimeout = null;
+        }
         elements.input.disabled = true;
-        elements.start.hidden = false;
-        elements.start.textContent = "▶　PLAY AGAIN";
-        $("resultTitle").textContent = remaining === 0 ? "TIME UP!" : "SESSION END";
+        elements.difficulty.disabled = false;
+        const wpm = elapsed === 0 ? 0 : Math.round(correctKeys / 5 / (elapsed / 60));
+        const result = {
+          difficulty: selectedDifficulty,
+          score,
+          solved,
+          accuracy: accuracy(),
+          maxCombo,
+          wpm
+        };
+        const recordResult = saveRecord(result);
+        $("resultTitle").textContent = remaining === 0 ? "時間終了" : "プレイ終了";
         $("resultScore").textContent = score.toLocaleString("ja-JP");
-        $("resultWords").textContent = `${solved} words`;
+        $("resultWords").textContent = `${solved}問`;
         $("resultAccuracy").textContent = `${accuracy()}%`;
-        $("resultCombo").textContent = `${maxCombo} hit`;
-        $("resultWpm").textContent = `${elapsed === 0 ? 0 : Math.round(correctKeys / 5 / (elapsed / 60))} WPM`;
+        $("resultCombo").textContent = `${maxCombo}回`;
+        $("resultWpm").textContent = `${wpm} 語/分`;
+        elements.recordNotice.textContent = recordResult.saved
+          ? recordResult.newRecord ? "自己ベスト更新！" : "記録を保存しました"
+          : "記録を保存できませんでした";
+        renderRecordHistory(selectedDifficulty);
+        updateRecordsSummary();
         playEffect("finish");
         elements.result.hidden = false;
+        elements.retry.focus();
       }
 
-      function beginRound() {
-        state = "playing";
-        remaining = GAME_SECONDS;
+      function resetRound() {
+        remaining = DIFFICULTIES[selectedDifficulty].seconds;
         elapsed = 0;
         keyTimestamps.length = 0;
         updateKeySpeed();
@@ -733,8 +1217,32 @@
         wordNumber = 0;
         bag = [];
         lastWord = "";
+        clearVisualEffects();
+        clearCompletionTimeout();
+        if (rewardTimeout !== null) {
+          window.clearTimeout(rewardTimeout);
+          rewardTimeout = null;
+        }
+        elements.reward.classList.remove("show", "level-up");
+        elements.reward.textContent = "";
+        elements.score.classList.remove("bump");
         elements.result.hidden = true;
-        elements.start.hidden = true;
+        elements.input.disabled = true;
+        elements.input.value = "";
+        elements.target.textContent = "--";
+        elements.level.textContent = "01";
+        elements.wordLabel.textContent = "このキーワードを入力";
+        elements.word.textContent = "準備完了";
+        elements.word.classList.remove("target-shake");
+        elements.romaji.textContent = "開始するとローマ字が表示されます";
+        elements.romaji.classList.add("empty");
+        elements.progress.style.width = "0%";
+        elements.arena.classList.remove("shake");
+        updateHud();
+      }
+
+      function beginRound() {
+        state = "playing";
         elements.input.disabled = false;
         elements.input.focus();
         updateHud();
@@ -751,10 +1259,15 @@
       }
 
       function startGame() {
-        if (state === "countdown" || state === "playing") return;
+        if (state === "countdown" || state === "playing"
+          || (activeScreen !== "difficulty" && activeScreen !== "game")) return;
+        selectedDifficulty = elements.difficulty.value;
+        resetRound();
+        elements.difficulty.disabled = true;
+        showScreen("game");
+        updateRecordsSummary();
         state = "countdown";
         elements.result.hidden = true;
-        elements.start.hidden = true;
         elements.countdown.hidden = false;
         let count = 3;
         elements.countdownNumber.textContent = String(count);
@@ -777,15 +1290,35 @@
       }
 
       document.addEventListener("keydown", handleKey);
+      elements.titleStart.addEventListener("click", showDifficultyScreen);
+      elements.recordArchiveToggle.addEventListener("click", () => {
+        const expanded = elements.recordArchiveToggle.getAttribute("aria-expanded") !== "true";
+        elements.recordArchiveToggle.setAttribute("aria-expanded", String(expanded));
+        elements.recordArchiveToggle.textContent = expanded ? "過去の自己ベストを閉じる" : "過去の自己ベストを見る";
+        elements.recordArchive.hidden = !expanded;
+        if (expanded) renderRecordArchive();
+      });
+      elements.difficultyBack.addEventListener("click", returnToTitle);
+      elements.resultTitleButton.addEventListener("click", returnToTitle);
       elements.start.addEventListener("click", startGame);
       elements.retry.addEventListener("click", startGame);
+      elements.difficulty.addEventListener("change", () => {
+        if (state !== "ready" && state !== "finished") return;
+        selectedDifficulty = elements.difficulty.value;
+        remaining = DIFFICULTIES[selectedDifficulty].seconds;
+        updateHud();
+        updateRecordsSummary();
+      });
       elements.sound.addEventListener("click", () => {
         soundEnabled = !soundEnabled;
         elements.sound.setAttribute("aria-pressed", String(soundEnabled));
-        elements.sound.textContent = soundEnabled ? "♪ SOUND ON" : "♪ SOUND OFF";
+        elements.sound.textContent = soundEnabled ? "♪ 音声オン" : "♪ 音声オフ";
         if (soundEnabled) playEffect("levelUp");
       });
 
+      records = readRecords();
+      showScreen("title");
+      updateRecordsSummary();
       updateHud();
     })();
   </script>
