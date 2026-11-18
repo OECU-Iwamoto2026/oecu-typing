@@ -265,13 +265,21 @@
     }
     .overlay[hidden] { display: none; }
     .count-number { color: var(--cyan); font: 900 clamp(70px, 16vw, 120px)/1 monospace; text-shadow: 0 0 35px rgba(69,243,255,.7); animation: pop .75s ease both; }
-    .result-card { width: min(360px, calc(100% - 32px)); padding: 28px; border: 1px solid var(--cyan); border-radius: 6px; background: rgba(13, 19, 34, .97); text-align: center; box-shadow: 0 0 40px rgba(69,243,255,.12); }
+    .result-overlay { display: flex; flex-direction: column; align-items: center; overflow-x: hidden; overflow-y: auto; padding: 16px; }
+    .arena:has(.result-overlay:not([hidden])) { min-height: 430px; }
+    .result-card { flex: 0 0 auto; width: min(760px, 100%); margin: auto 0; padding: 24px; border: 1px solid var(--cyan); border-radius: 6px; background: rgba(13, 19, 34, .97); text-align: center; box-shadow: 0 0 40px rgba(69,243,255,.12); }
     .result-card h2 { margin: 0 0 6px; color: var(--cyan); font: 900 20px monospace; letter-spacing: .12em; }
     .result-card p { margin: 0 0 18px; color: var(--muted); font-size: 11px; }
     .result-score { margin: 13px 0; font: 900 42px monospace; }
-    .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 18px 0 22px; }
+    .result-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 18px 0 22px; }
     .result-stat { padding: 10px; border: 1px solid var(--line); color: var(--muted); font-size: 10px; }
     .result-stat strong { display: block; margin-top: 5px; color: var(--text); font: 700 17px monospace; }
+    .result-stat-row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .result-stat-row + .result-stat-row { margin-top: 7px; padding-top: 7px; border-top: 1px solid var(--line); }
+    .result-stat-row strong { margin-top: 0; font-size: 14px; white-space: nowrap; }
+    .result-stat strong.record-glow { color: var(--cyan); text-shadow: 0 0 8px rgba(69, 243, 255, .45); }
+    .record-badge { display: inline-block; margin-top: 7px; padding: 3px 6px; border: 1px solid rgba(69, 243, 255, .35); border-radius: 3px; color: var(--cyan); font: 700 9px monospace; }
+    .record-badge[hidden] { display: none; }
 
     @keyframes blink { 50% { opacity: .35; } }
     @keyframes shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
@@ -285,6 +293,8 @@
       .hud { grid-template-columns: repeat(2, 1fr); gap: 8px; }
       .stat { min-height: 66px; padding: 10px 12px; }
       .arena { min-height: 318px; padding: 20px 14px 23px; }
+      .result-card { padding: 18px; }
+      .result-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .word { min-height: 46px; }
       .romaji { margin-bottom: 21px; }
     }
@@ -336,7 +346,7 @@
         </div>
         <p class="hint">表記ゆれ対応：shu / syu・shi / si・chi / ti・小さい「っ」「ゃゅょ」・n / nn / n' など</p>
         <div class="overlay" id="countdownOverlay" hidden aria-live="assertive"><span class="count-number" id="countdownNumber">3</span></div>
-        <div class="overlay" id="resultOverlay" hidden aria-live="polite">
+        <div class="overlay result-overlay" id="resultOverlay" hidden aria-live="polite">
           <div class="result-card">
             <h2 id="resultTitle">TIME UP!</h2>
             <p>おつかれさま！今回の戦績はこちら</p>
@@ -345,7 +355,12 @@
               <div class="result-stat">正解ワード<strong id="resultWords">0</strong></div>
               <div class="result-stat">正確率<strong id="resultAccuracy">100%</strong></div>
               <div class="result-stat">最高コンボ<strong id="resultCombo">0</strong></div>
-              <div class="result-stat">入力速度<strong id="resultWpm">0 WPM</strong></div>
+              <div class="result-stat">正しく打てた文字数<strong id="resultCorrectCharacters">0文字</strong><span class="record-badge" id="resultCharactersBadge" hidden></span></div>
+              <div class="result-stat">最高記録<strong id="resultBestCharacters">0文字</strong></div>
+              <div class="result-stat">
+                <div class="result-stat-row"><span>入力速度</span><strong id="resultWpm">0 WPM</strong></div>
+                <div class="result-stat-row"><span>自己ベスト</span><strong id="resultBestWpm">0 WPM</strong></div>
+              </div>
             </div>
             <button class="primary-button" id="retryButton" type="button">もう一度プレイ</button>
           </div>
@@ -472,6 +487,8 @@
       }
 
       const GAME_SECONDS = 60;
+      const BEST_WPM_STORAGE_KEY = "oecu-typing-best-wpm";
+      const BEST_CORRECT_CHARACTERS_STORAGE_KEY = `oecu-typing-best-correct-characters-${GAME_SECONDS}s`;
       const $ = (id) => document.getElementById(id);
       const elements = {
         arena: $("arena"), timer: $("timerValue"), score: $("scoreValue"),
@@ -509,6 +526,24 @@
       function accuracy() {
         const total = correctKeys + wrongKeys;
         return total === 0 ? 100 : Math.round((correctKeys / total) * 100);
+      }
+
+      function readBestRecord(storageKey) {
+        try {
+          const storedRecord = window.localStorage.getItem(storageKey);
+          const record = storedRecord === null ? 0 : Number(storedRecord);
+          return Number.isSafeInteger(record) && record >= 0 ? record : 0;
+        } catch {
+          return 0;
+        }
+      }
+
+      function saveBestRecord(storageKey, record) {
+        try {
+          window.localStorage.setItem(storageKey, String(record));
+        } catch {
+          // Keep the result screen available when storage is disabled.
+        }
       }
 
       function updateHud() {
@@ -713,7 +748,29 @@
         $("resultWords").textContent = `${solved} words`;
         $("resultAccuracy").textContent = `${accuracy()}%`;
         $("resultCombo").textContent = `${maxCombo} hit`;
-        $("resultWpm").textContent = `${elapsed === 0 ? 0 : Math.round(correctKeys / 5 / (elapsed / 60))} WPM`;
+        const wpm = elapsed === 0 ? 0 : Math.round(correctKeys / 5 / (elapsed / 60));
+        let bestWpm = readBestRecord(BEST_WPM_STORAGE_KEY);
+        if (wpm > bestWpm) {
+          bestWpm = wpm;
+          saveBestRecord(BEST_WPM_STORAGE_KEY, bestWpm);
+        }
+        $("resultWpm").textContent = `${wpm} WPM`;
+        $("resultBestWpm").textContent = `${bestWpm} WPM`;
+        const correctCharacters = correctKeys;
+        const previousBestCharacters = readBestRecord(BEST_CORRECT_CHARACTERS_STORAGE_KEY);
+        let bestCharacters = previousBestCharacters;
+        let recordBadge = "";
+        if (correctCharacters > 0 && correctCharacters > previousBestCharacters) {
+          bestCharacters = correctCharacters;
+          recordBadge = previousBestCharacters === 0 ? "初記録" : "新記録！";
+          saveBestRecord(BEST_CORRECT_CHARACTERS_STORAGE_KEY, bestCharacters);
+        }
+        $("resultCorrectCharacters").textContent = `${correctCharacters}文字`;
+        $("resultBestCharacters").textContent = `${bestCharacters}文字`;
+        const charactersBadge = $("resultCharactersBadge");
+        charactersBadge.textContent = recordBadge;
+        charactersBadge.hidden = recordBadge === "";
+        $("resultCorrectCharacters").classList.toggle("record-glow", recordBadge !== "");
         playEffect("finish");
         elements.result.hidden = false;
       }
