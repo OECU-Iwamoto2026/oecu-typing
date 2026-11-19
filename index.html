@@ -297,6 +297,14 @@
       text-align: center;
       text-shadow: 0 0 12px rgba(196,255,85,.35);
     }
+    .romaji .done {
+      color: #ffd84d;
+      text-shadow: 0 0 12px rgba(255,216,77,.45);
+    }
+    .romaji .pending {
+      color: #65708b;
+      text-shadow: none;
+    }
     .romaji.empty { color: #65708b; text-shadow: none; }
     .game-reward {
       min-height: 23px;
@@ -1016,7 +1024,11 @@
         elements.wordLabel.textContent = "このキーワードを入力";
         elements.word.textContent = currentWord.ja;
         elements.word.classList.remove("target-shake");
-        elements.romaji.textContent = currentWord.roma;
+        elements.romaji.replaceChildren();
+        const pending = document.createElement("span");
+        pending.className = "pending";
+        pending.textContent = currentWord.roma;
+        elements.romaji.append(pending);
         elements.romaji.classList.add("empty");
         elements.progress.style.width = "0%";
         elements.input.value = "";
@@ -1025,16 +1037,39 @@
 
       function renderTyping() {
         const progress = Math.min(typed.length / currentWord.roma.length, 1);
-        elements.romaji.textContent = typed || currentWord.roma;
         elements.romaji.classList.toggle("empty", typed.length === 0);
         elements.progress.style.width = `${progress * 100}%`;
+
+        const matchingVariant = currentVariants.find((variant) =>
+          variant === typed && variant.length >= typed.length
+        ) ?? currentVariants.find((variant) => variant.startsWith(typed))
+          ?? currentWord.roma;
+        const displayed = typed.length === 0 ? currentWord.roma : matchingVariant;
+        elements.romaji.replaceChildren();
+
+        if (typed.length === 0) {
+          const pending = document.createElement("span");
+          pending.className = "pending";
+          pending.textContent = displayed;
+          elements.romaji.append(pending);
+          return;
+        }
+
+        const done = document.createElement("span");
+        done.className = "done";
+        done.textContent = displayed.slice(0, typed.length);
+        const pending = document.createElement("span");
+        pending.className = "pending";
+        pending.textContent = displayed.slice(typed.length);
+        elements.romaji.append(done, pending);
       }
 
       function showPawOverTypedCharacter() {
-        if (typed.length === 0 || !elements.romaji.firstChild) return;
+        const done = elements.romaji.querySelector(".done");
+        if (typed.length === 0 || !done?.firstChild) return;
         const range = document.createRange();
-        range.setStart(elements.romaji.firstChild, typed.length - 1);
-        range.setEnd(elements.romaji.firstChild, typed.length);
+        range.setStart(done.firstChild, Math.max(0, done.textContent.length - 1));
+        range.setEnd(done.firstChild, done.textContent.length);
         const characterRect = range.getBoundingClientRect();
         const arenaRect = elements.arena.getBoundingClientRect();
         const targetX = characterRect.left + characterRect.width / 2 - arenaRect.left - elements.arena.clientLeft;
@@ -1349,7 +1384,11 @@
         elements.wordLabel.textContent = "このキーワードを入力";
         elements.word.textContent = "準備完了";
         elements.word.classList.remove("target-shake");
-        elements.romaji.textContent = "開始するとローマ字が表示されます";
+        elements.romaji.replaceChildren();
+        const placeholder = document.createElement("span");
+        placeholder.className = "pending";
+        placeholder.textContent = "開始するとローマ字が表示されます";
+        elements.romaji.append(placeholder);
         elements.romaji.classList.add("empty");
         elements.progress.style.width = "0%";
         elements.arena.classList.remove("shake");
