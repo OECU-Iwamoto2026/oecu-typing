@@ -447,7 +447,7 @@
       </div>
       <div class="top-right">
         <span class="live-label">プレイ準備完了</span>
-        <button class="sound-button" id="soundButton" type="button" aria-pressed="false">♪ 音声オフ</button>
+        <button class="sound-button" id="soundButton" type="button" aria-pressed="true">♪ 音声オン</button>
       </div>
     </header>
 
@@ -566,34 +566,34 @@
       "use strict";
 
       const WORDS = [
-        { ja: "プログラミング", roma: "puroguramingu" },
-        { ja: "人工知能", roma: "jinkouchinou" },
-        { ja: "データサイエンス", roma: "de-tasaiensu" },
-        { ja: "ネットワーク", roma: "nettowa-ku" },
-        { ja: "サイバーセキュリティ", roma: "saiba-sekyurithi" },
-        { ja: "アルゴリズム", roma: "arugorizumu" },
-        { ja: "情報通信", roma: "jouhoutsuushin" },
-        { ja: "クラウド", roma: "kuraudo" },
-        { ja: "ロボティクス", roma: "robotikusu" },
-        { ja: "機械学習", roma: "kikaigakushuu" },
-        { ja: "データベース", roma: "de-tabe-su" },
-        { ja: "シミュレーション", roma: "shimyure-shon" },
-        { ja: "画像処理", roma: "gazoushori" },
-        { ja: "ゲーム開発", roma: "ge-mukaihatsu" },
-        { ja: "ソフトウェア", roma: "sofutowea" },
-        { ja: "電子工学", roma: "denshikougaku" },
-        { ja: "メタバース", roma: "metaba-su" },
-        { ja: "プログラミング言語", roma: "puroguramingugengo" },
-        { ja: "量子コンピュータ", roma: "ryoushikonpyu-ta" },
-        { ja: "ユーザーインターフェース", roma: "yu-za-inta-fe-su" },
-        { ja: "情報セキュリティ", roma: "jouhousekyurithi" },
-        { ja: "センサーネットワーク", roma: "sensa-nettowa-ku" },
-        { ja: "ビッグデータ", roma: "biggude-ta" },
-        { ja: "オペレーティングシステム", roma: "opere-thingushisutemu" },
-        { ja: "モデリング", roma: "moderingu" },
-        { ja: "ヒューマンインターフェース", roma: "hyu-maninta-fe-su" },
-        { ja: "無線通信", roma: "musentsuushin" },
-        { ja: "ものづくり", roma: "monozukuri", aliases: ["monodukuri", "monodzukuri"] }
+        { ja: "プログラミング", hira: "ぷろぐらみんぐ", roma: "puroguramingu" },
+        { ja: "人工知能", hira: "じんこうちのう", roma: "jinkouchinou" },
+        { ja: "データサイエンス", hira: "でーたさいえんす", roma: "de-tasaiensu" },
+        { ja: "ネットワーク", hira: "ねっとわーく", roma: "nettowa-ku" },
+        { ja: "サイバーセキュリティ", hira: "さいばーせきゅりてぃ", roma: "saiba-sekyurithi" },
+        { ja: "アルゴリズム", hira: "あるごりずむ", roma: "arugorizumu" },
+        { ja: "情報通信", hira: "じょうほうつうしん", roma: "jouhoutsuushin" },
+        { ja: "クラウド", hira: "くらうど", roma: "kuraudo" },
+        { ja: "ロボティクス", hira: "ろぼてぃくす", roma: "robotikusu" },
+        { ja: "機械学習", hira: "きかいがくしゅう", roma: "kikaigakushuu" },
+        { ja: "データベース", hira: "でーたべーす", roma: "de-tabe-su" },
+        { ja: "シミュレーション", hira: "しみゅれーしょん", roma: "shimyure-shon" },
+        { ja: "画像処理", hira: "がぞうしょり", roma: "gazoushori" },
+        { ja: "ゲーム開発", hira: "げーむかいはつ", roma: "ge-mukaihatsu" },
+        { ja: "ソフトウェア", hira: "そふとうぇあ", roma: "sofutowea" },
+        { ja: "電子工学", hira: "でんしこうがく", roma: "denshikougaku" },
+        { ja: "メタバース", hira: "めたばーす", roma: "metaba-su" },
+        { ja: "プログラミング言語", hira: "ぷろぐらみんぐげんご", roma: "puroguramingugengo" },
+        { ja: "量子コンピュータ", hira: "りょうじこんぴゅーたー", roma: "ryoushikonpyu-ta" },
+        { ja: "ユーザーインターフェース", hira: "ゆーざーいんたーふぇーす", roma: "yu-za-inta-fe-su" },
+        { ja: "情報セキュリティ", hira: "じょうほうせきゅりてぃ", roma: "jouhousekyurithi" },
+        { ja: "センサーネットワーク", hira: "せんさーねっとわーく", roma: "sensa-nettowa-ku" },
+        { ja: "ビッグデータ", hira: "びっぐでーた", roma: "biggude-ta" },
+        { ja: "オペレーティングシステム", hira: "おぺれーてぃんぐしすてむ", roma: "opere-tingushisutemu" },
+        { ja: "モデリング", hira: "もでりんぐ", roma: "moderingu" },
+        { ja: "ヒューマンインターフェース", hira: "ひゅーまんいんたーふぇーす", roma: "hyu-maninta-fe-su" },
+        { ja: "無線通信", hira: "むせんつうしん", roma: "musentsuushin" },
+        { ja: "ものづくり", hira: "ものづくり", roma: "monozukuri", aliases: ["monodukuri", "monodzukuri"] }
       ];
       const ROMAJI_ALIASES = new Map([
         ["sha", ["sha", "sya", "shixya", "shilya", "sixya", "silya"]],
@@ -674,6 +674,106 @@
         );
       }
 
+      function buildHiraganaRomajiVariants(hira) {
+        const kanaEntries = [
+          ["あ","a"], ["い","i","yi"], ["う","u"], ["え","e"], ["お","o"],
+          ["か","ka"], ["き","ki"], ["く","ku"], ["け","ke"], ["こ","ko"],
+          ["さ","sa"], ["し","shi","si"], ["す","su"], ["せ","se"], ["そ","so"],
+          ["た","ta"], ["ち","chi","ti"], ["つ","tsu","tu"], ["て","te"], ["と","to"],
+          ["な","na"], ["に","ni"], ["ぬ","nu"], ["ね","ne"], ["の","no"],
+          ["は","ha"], ["ひ","hi"], ["ふ","fu","hu"], ["へ","he"], ["ほ","ho"],
+          ["ま","ma"], ["み","mi"], ["む","mu"], ["め","me"], ["も","mo"],
+          ["や","ya"], ["ゆ","yu"], ["よ","yo"],
+          ["ら","ra"], ["り","ri"], ["る","ru"], ["れ","re"], ["ろ","ro"],
+          ["わ","wa"], ["を","wo","o"], ["ん","n","nn","n'"],
+          ["が","ga"], ["ぎ","gi"], ["ぐ","gu"], ["げ","ge"], ["ご","go"],
+          ["ざ","za"], ["じ","ji","zi"], ["ず","zu"], ["ぜ","ze"], ["ぞ","zo"],
+          ["だ","da"], ["ぢ","ji","zi"], ["づ","zu"], ["で","de"], ["ど","do"],
+          ["ば","ba"], ["び","bi"], ["ぶ","bu"], ["べ","be"], ["ぼ","bo"],
+          ["ぱ","pa"], ["ぴ","pi"], ["ぷ","pu"], ["ぺ","pe"], ["ぽ","po"],
+          ["ぁ","xa","la"], ["ぃ","xi","li"], ["ぅ","xu","lu"], ["ぇ","xe","le","we","ye"], ["ぉ","xo","lo"],
+          ["ゃ","xya","lya"], ["ゅ","xyu","lyu"], ["ょ","xyo","lyo"], ["ー","-"],
+          ["ゔ","vu"], ["ゎ","xwa","lwa"], ["ヴ","vu"], ["ヷ","va"], ["ヸ","vi"], ["ヴ","vu"], ["ヹ","ve"], ["ヺ","vo"]
+        ];
+        const kanaMap = new Map(kanaEntries.map((entry) => [entry[0], entry.slice(1)]));
+
+        const yoonEntries = [
+          ["きゃ","kya","kiya","kixya","kilya"], ["きゅ","kyu","kiyu","kixyu","kilyu"], ["きょ","kyo","kiyo","kixyo","kilyo"],
+          ["ぎゃ","gya","giya","gixya","gilya"], ["ぎゅ","gyu","giyu","gixyu","gilyu"], ["ぎょ","gyo","giyo","gixyo","gilyo"],
+          ["しゃ","sha","sya","shya","shixa","shila"], ["しゅ","shu","syu","shyu","shixyu","shilyu"], ["しょ","sho","syo","shyo","shixyo","shilyo"],
+          ["ちゃ","cha","tya","cya","chixya","chilya"], ["ちゅ","chu","tyu","cyu","chixyu","chilyu"], ["ちょ","cho","tyo","cyo","chixyo","chilyo"],
+          ["じゃ","ja","jya","zya","jixya","jilya"], ["じゅ","ju","jyu","zyu","jixyu","jilyu"], ["じょ","jo","jyo","zyo","jixyo","jilyo"],
+          ["にゃ","nya","niya","nixya","nilya"], ["にゅ","nyu","niyu","nixyu","nilyu"], ["にょ","nyo","niyo","nixyo","nilyo"],
+          ["ひゃ","hya","hiya","hixya","hilya"], ["ひゅ","hyu","hiyu","hixyu","hilyu"], ["ひょ","hyo","hiyo","hixyo","hilyo"],
+          ["みゃ","mya","miya","mixya","milya"], ["みゅ","myu","miyu","mixyu","milyu"], ["みょ","myo","miyo","mixyo","milyo"],
+          ["りゃ","rya","riya","rixya","rilya"], ["りゅ","ryu","riyu","rixyu","rilyu"], ["りょ","ryo","riyo","rixyo","rilyo"],
+          ["びゃ","bya","biya","bixya","bilya"], ["びゅ","byu","biyu","bixyu","bilyu"], ["びょ","byo","biyo","bixyo","bilyo"],
+          ["ぴゃ","pya","piya","pixya","pilya"], ["ぴゅ","pyu","piyu","pixyu","pilyu"], ["ぴょ","pyo","piyo","pixyo","pilyo"]
+        ];
+        for (const [kana, ...variants] of yoonEntries) {
+          kanaMap.set(kana, variants);
+        }
+        kanaMap.set("てぃ", ["thi", "ti", "tei", "texi", "teli"]);
+        kanaMap.set("でぃ", ["dhi", "di", "dexi", "deli"]);
+        kanaMap.set("うぇ", ["we", "ue", "uxe", "ule"]);
+        kanaMap.set("うぉ", ["who", "wo", "uxo", "ulo"]);
+        kanaMap.set("ふぁ", ["fa", "hwa", "fwa", "fuxa", "fula"]);
+        kanaMap.set("ふぃ", ["fi", "fwi", "hwi", "fuxi", "fuli"]);
+        kanaMap.set("ふぇ", ["fe", "fye", "fwe", "hwe", "fuxe", "fule"]);
+        kanaMap.set("ふぉ", ["fo", "fwo", "hwo", "fuxo", "fulo"]);
+        kanaMap.set("しぇ", ["she", "sye", "sixe", "sile"]);
+        kanaMap.set("じぇ", ["je", "jye", "zye", "jixe", "jile"]);
+        kanaMap.set("ちぇ", ["che", "tye", "cye", "chixe", "chile", "tixe", "tile"]);
+        kanaMap.set("いぇ", ["ye", "ie", "ixe", "ile"]);
+        kanaMap.set("うぃ", ["wi", "uxi", "uli"]);
+        kanaMap.set("くぁ", ["kwa", "qa", "kuxa", "kula"]);
+        kanaMap.set("くぃ", ["kwi", "qi", "kuxi", "kuli"]);
+        kanaMap.set("くぇ", ["kwe", "qe", "kuxe", "kule"]);
+        kanaMap.set("くぉ", ["kwo", "qo", "kuxo", "kulo"]);
+        kanaMap.set("ぐぁ", ["gwa", "ga", "guxa", "gula"]);
+        kanaMap.set("ぐぃ", ["gwi", "guxi", "guli"]);
+        kanaMap.set("ぐぇ", ["gwe", "gue", "guxe", "gule"]);
+        kanaMap.set("ぐぉ", ["gwo", "guo", "guxo", "gulo"]);
+        kanaMap.set("つぁ", ["tsa", "tsuxa", "tsula"]);
+        kanaMap.set("つぃ", ["tsi", "tsuxi", "tsuli"]);
+        kanaMap.set("つぇ", ["tse", "tsuxe", "tsule"]);
+        kanaMap.set("つぉ", ["tso", "tsuxo", "tsulo"]);
+        kanaMap.set("てう", ["tu", "teu", "texu", "telu"]);
+        kanaMap.set("でゅ", ["dyu", "deyu", "dexyu", "delyu"]);
+
+        const keys = [...kanaMap.keys()].sort((a, b) => b.length - a.length);
+        let parts = [""];
+        for (let index = 0; index < hira.length;) {
+          const nextKana = hira[index];
+          if (nextKana === "っ") {
+            const following = hira[index + 1] ? hira[index + 1] : "";
+            const options = ["xtu", "ltu", "xtsu", "ltsu"];
+            const consonants = new Map([
+              ["か","k"], ["き","k"], ["く","k"], ["け","k"], ["こ","k"],
+              ["さ","s"], ["し","s"], ["す","s"], ["せ","s"], ["そ","s"],
+              ["た","t"], ["ち","t"], ["つ","t"], ["て","t"], ["と","t"],
+              ["は","h"], ["ひ","h"], ["ふ","h"], ["へ","h"], ["ほ","h"],
+              ["ま","m"], ["み","m"], ["む","m"], ["め","m"], ["も","m"],
+              ["ら","r"], ["り","r"], ["る","r"], ["れ","r"], ["ろ","r"],
+              ["が","g"], ["ぎ","g"], ["ぐ","g"], ["げ","g"], ["ご","g"],
+              ["ざ","z"], ["じ","j"], ["ず","z"], ["ぜ","z"], ["ぞ","z"],
+              ["だ","d"], ["で","d"], ["ど","d"], ["ば","b"], ["び","b"], ["ぶ","b"],
+              ["べ","b"], ["ぼ","b"], ["ぱ","p"], ["ぴ","p"], ["ぷ","p"], ["ぺ","p"], ["ぽ","p"]
+            ]);
+            const consonant = consonants.get(following);
+            if (consonant) options.push(consonant + consonant);
+            parts = parts.flatMap((prefix) => options.map((option) => prefix + option));
+            index += 1;
+            continue;
+          }
+          const key = keys.find((kana) => hira.startsWith(kana, index));
+          const options = key ? kanaMap.get(key) : [nextKana];
+          parts = parts.flatMap((prefix) => options.map((option) => prefix + option));
+          index += key ? key.length : 1;
+        }
+        return [...new Set(parts)];
+      }
+
       const DIFFICULTIES = {
         easy: { label: "ゆったり", seconds: 75 },
         normal: { label: "スタンダード", seconds: 60 },
@@ -681,6 +781,7 @@
       };
       const GAME_SECONDS = DIFFICULTIES.normal.seconds;
       const RECORDS_KEY = "oecu-type-arena-records-v1";
+      const SOUND_KEY = "oecu-type-arena-sound-v1";
       const $ = (id) => document.getElementById(id);
       const elements = {
         arena: $("arena"), timer: $("timerValue"), score: $("scoreValue"),
@@ -735,7 +836,7 @@
       let cyclistTimeout = null;
       let rewardTimeout = null;
       const keyTimestamps = [];
-      let soundEnabled = false;
+      let soundEnabled = true;
       let audioContext = null;
 
       function emptyRecords() {
@@ -903,7 +1004,11 @@
           }
         }
         currentWord = bag.pop();
-        currentVariants = [...new Set([...buildRomajiVariants(currentWord.roma), ...(currentWord.aliases ?? [])])];
+        currentVariants = [...new Set([
+          ...buildHiraganaRomajiVariants(currentWord.hira),
+          ...buildRomajiVariants(currentWord.roma),
+          ...(currentWord.aliases ?? [])
+        ])];
         lastWord = currentWord.roma;
         typed = "";
         wordNumber += 1;
@@ -1024,23 +1129,33 @@
 
       function playTone(frequency, delay, duration, waveform, volume, endFrequency = frequency) {
         if (!soundEnabled) return;
-        audioContext ??= new (window.AudioContext || window.webkitAudioContext)();
-        if (audioContext.state === "suspended") audioContext.resume();
-        const startTime = audioContext.currentTime + delay;
-        const oscillator = audioContext.createOscillator();
-        const gain = audioContext.createGain();
-        oscillator.type = waveform;
-        oscillator.frequency.setValueAtTime(frequency, startTime);
-        if (endFrequency !== frequency) {
-          oscillator.frequency.exponentialRampToValueAtTime(endFrequency, startTime + duration);
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+        audioContext ??= new AudioContextClass();
+
+        const scheduleTone = () => {
+          const startTime = audioContext.currentTime + delay;
+          const oscillator = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+          oscillator.type = waveform;
+          oscillator.frequency.setValueAtTime(frequency, startTime);
+          if (endFrequency !== frequency) {
+            oscillator.frequency.exponentialRampToValueAtTime(endFrequency, startTime + duration);
+          }
+          gain.gain.setValueAtTime(.0001, startTime);
+          gain.gain.exponentialRampToValueAtTime(volume, startTime + .008);
+          gain.gain.exponentialRampToValueAtTime(.0001, startTime + duration);
+          oscillator.connect(gain);
+          gain.connect(audioContext.destination);
+          oscillator.start(startTime);
+          oscillator.stop(startTime + duration);
+        };
+
+        if (audioContext.state === "suspended") {
+          void audioContext.resume().then(scheduleTone).catch(() => {});
+        } else {
+          scheduleTone();
         }
-        gain.gain.setValueAtTime(.0001, startTime);
-        gain.gain.exponentialRampToValueAtTime(volume, startTime + .008);
-        gain.gain.exponentialRampToValueAtTime(.0001, startTime + duration);
-        oscillator.connect(gain);
-        gain.connect(audioContext.destination);
-        oscillator.start(startTime);
-        oscillator.stop(startTime + duration);
       }
 
       function beep(frequency, duration = .065) {
@@ -1313,8 +1428,24 @@
         soundEnabled = !soundEnabled;
         elements.sound.setAttribute("aria-pressed", String(soundEnabled));
         elements.sound.textContent = soundEnabled ? "♪ 音声オン" : "♪ 音声オフ";
+        try {
+          window.localStorage.setItem(SOUND_KEY, String(soundEnabled));
+        } catch (error) {
+          // Audio setting can still be changed when storage is unavailable.
+        }
         if (soundEnabled) playEffect("levelUp");
       });
+
+      try {
+        const savedSoundSetting = window.localStorage.getItem(SOUND_KEY);
+        if (savedSoundSetting !== null) {
+          soundEnabled = savedSoundSetting === "true";
+          elements.sound.setAttribute("aria-pressed", String(soundEnabled));
+          elements.sound.textContent = soundEnabled ? "♪ 音声オン" : "♪ 音声オフ";
+        }
+      } catch (error) {
+        // Sound remains enabled when storage is unavailable.
+      }
 
       records = readRecords();
       showScreen("title");
